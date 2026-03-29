@@ -241,33 +241,33 @@ textarea{resize:vertical;min-height:60px}
   <div class="hdr-right">
     <div class="hdr-sync"><span class="live-dot"></span><span id="sync-time">Connecting...</span></div>
     <button class="btn-refresh" onclick="refreshNow()">&#8635; Refresh</button>
-    <div class="hdr-user" onclick="showNameEdit()">
+    <div class="hdr-user" style="cursor:default">
       <div class="hdr-avatar" id="hdr-avatar">?</div>
       <div>
-        <div class="hdr-uname" id="hdr-uname">Set your name</div>
+        <div class="hdr-uname" id="hdr-uname">—</div>
         <div class="hdr-urole" id="hdr-urole">—</div>
       </div>
     </div>
+    <button class="btn-refresh" onclick="signOut()" style="margin-left:4px">Sign Out</button>
   </div>
 </div>
 
-<!-- NAME MODAL -->
-<div id="name-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:10px;padding:24px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
-    <div style="font-size:15px;font-weight:700;margin-bottom:4px">Welcome to Inbound Ops Central</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Please enter your name to get started</div>
-    <div class="fg"><label>Your Name</label><input id="name-input" placeholder="e.g. Vipul Kotkar" onkeydown="if(event.key==='Enter')saveName()"></div>
-    <div class="fg"><label>Your Role</label>
-      <select id="role-input-modal">
-        <option value="admin">Admin</option>
-        <option value="supply_planning">Supply Planning</option>
-        <option value="logistics_team">Logistics Team</option>
-        <option value="logistics_partner">Logistics Partner (Transporter)</option>
-        <option value="security">Security</option>
-        <option value="warehouse">Warehouse Team</option>
-      </select>
+<!-- LOGIN MODAL -->
+<div id="login-modal" style="position:fixed;inset:0;background:var(--nav-bg);z-index:999;display:flex;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:32px;width:360px;box-shadow:0 24px 80px rgba(0,0,0,.4)">
+    <div style="text-align:center;margin-bottom:24px">
+      <img src="data:image/png;base64,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" alt="Mosaic" style="height:36px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto">
+      <div style="font-size:17px;font-weight:700;color:var(--text)">Inbound Ops Central</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px">Warehouse &amp; Vendor Scheduling</div>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="saveName()">Get Started</button>
+    <div id="login-err" class="al-err alert" style="display:none;font-size:12px"></div>
+    <div class="fg"><label>Your Google Email</label>
+      <input id="login-email" type="email" placeholder="yourname@mosaicwellness.in" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:9px 0;font-size:13px;margin-top:8px" id="login-btn" onclick="doLogin()">
+      Sign In
+    </button>
+    <div style="font-size:11px;color:var(--faint);text-align:center;margin-top:12px">Access is restricted to authorised accounts only.<br>Contact your admin if you need access.</div>
   </div>
 </div>
 
@@ -321,6 +321,10 @@ textarea{resize:vertical;min-height:60px}
     <div class="ni" data-s="master" data-roles="admin,supply_planning">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="5" rx="6" ry="2.5"/><path d="M2 5v3c0 1.4 2.7 2.5 6 2.5S14 9.4 14 8V5"/><path d="M2 8v3c0 1.4 2.7 2.5 6 2.5S14 12.4 14 11V8"/></svg>
       Vendors &amp; Partners
+    </div>
+    <div class="ni" data-s="users" data-roles="admin">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="4" r="2.5"/><circle cx="11" cy="4" r="2.5"/><path d="M1 14c0-2.8 1.8-4 4-4h2M9 14c0-2.8 1.8-4 4-4"/><path d="M12 10l1.5 1.5L16 9" stroke-width="1.5"/></svg>
+      User Management
     </div>
   </div>
 
@@ -408,8 +412,8 @@ textarea{resize:vertical;min-height:60px}
         <div class="card-body">
           <div class="fg"><label>Manufacturing Vendor</label><select id="s1-vendor" onchange="onVendor()"><option value="">Select vendor...</option></select></div>
           <div class="form-grid">
-            <div class="fg"><label>POC Name</label><input id="s1-poc-name" placeholder="Auto-filled"></div>
-            <div class="fg"><label>POC Mobile</label><input id="s1-poc-mob" placeholder="Auto-filled"></div>
+            <div class="fg"><label>POC Name <span style="font-weight:400;color:var(--faint)">(editable)</span></label><input id="s1-poc-name" placeholder="Auto-filled from vendor"></div>
+            <div class="fg"><label>POC Mobile <span style="font-weight:400;color:var(--faint)">(editable)</span></label><input id="s1-poc-mob" placeholder="Auto-filled from vendor"></div>
           </div>
           <div class="fg"><label>Drop Location</label>
             <div class="radio-row" id="s1-drop">
@@ -443,7 +447,7 @@ textarea{resize:vertical;min-height:60px}
         <div class="card-body">
           <div class="form-grid3">
             <div class="fg"><label>Boxes</label><input type="number" id="s1-boxes" placeholder="0" oninput="suggestV()"></div>
-            <div class="fg"><label>Weight (kg)</label><input type="number" id="s1-wt" placeholder="0" oninput="suggestV()"></div>
+            <div class="fg"><label>Weight (Metric Tons)</label><input type="number" id="s1-wt" placeholder="e.g. 1.5" step="0.01" oninput="suggestV()"></div>
             <div class="fg"><label>Vehicle Suggested</label><input id="s1-veh" readonly placeholder="Auto"></div>
           </div>
         </div>
@@ -468,7 +472,20 @@ textarea{resize:vertical;min-height:60px}
           <button class="btn btn-sm" style="margin-top:8px" onclick="addSKURow()">+ Add Row</button>
         </div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:4px">
+      <div class="card" style="margin-top:8px">
+        <div class="card-hdr"><div class="card-hdr-title">Invoice Upload</div><span class="badge b-amber">Required</span></div>
+        <div class="card-body" style="padding:8px 12px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px">After creating the token, a Google Drive folder will be auto-generated for this shipment. Upload your invoice PDF there.</div>
+          <div id="s1-drive-info" style="display:none" class="al-info alert" style="font-size:11px">
+            <b>Drive folder ready.</b> <a id="s1-drive-link" href="#" target="_blank" style="color:var(--blue);font-weight:600">Click here to open &amp; upload invoice →</a>
+          </div>
+          <div class="fg" style="margin-bottom:4px">
+            <label>Invoice Number (enter before creating token)</label>
+            <input id="s1-invoice-num" placeholder="e.g. INV-HW-2026-1234">
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn btn-primary" onclick="doCreateToken()">Create Shipment Token</button>
         <button class="btn btn-sm" onclick="clearS1()">Clear</button>
       </div>
@@ -581,11 +598,49 @@ textarea{resize:vertical;min-height:60px}
   <div id="s7-body"><div class="loading"><div class="spinner"></div>Loading pending DMS uploads...</div></div>
 </div>
 
+
+<!-- USER MANAGEMENT -->
+<div class="screen" id="sc-users">
+  <div class="pg-hdr">
+    <div><div class="pg-title">User Management</div><div class="pg-sub">Admin only — create and manage user accounts</div></div>
+    <div class="pg-actions"><button class="btn btn-primary btn-sm" onclick="showAddUser()">+ Add User</button></div>
+  </div>
+  <div id="add-user-form" style="display:none" class="card">
+    <div class="card-hdr"><div class="card-hdr-title">Create New User</div><button class="btn btn-sm" onclick="hideAddUser()">Cancel</button></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="fg"><label>Full Name</label><input id="nu-name" placeholder="e.g. Rahul Sharma"></div>
+        <div class="fg"><label>Google Email</label><input id="nu-email" type="email" placeholder="rahul@mosaicwellness.in"></div>
+        <div class="fg"><label>Role</label>
+          <select id="nu-role">
+            <option value="admin">Admin</option>
+            <option value="supply_planning">Supply Planning</option>
+            <option value="logistics_team">Logistics Team</option>
+            <option value="logistics_partner">Logistics Partner</option>
+            <option value="security">Security</option>
+            <option value="warehouse">Warehouse Team</option>
+            <option value="approver">Approver</option>
+          </select>
+        </div>
+        <div class="fg"><label>Department (optional)</label><input id="nu-dept" placeholder="e.g. Logistics"></div>
+      </div>
+      <div style="margin-top:4px;display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="doCreateUser()">Create User &amp; Send Welcome Email</button>
+      </div>
+      <div id="nu-result" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tbl-wrap" id="users-tbl">
+      <div class="loading" style="padding:20px"><div class="spinner"></div>Loading users...</div>
+    </div>
+  </div>
+</div>
 <!-- MASTER -->
 <div class="screen" id="sc-master">
   <div class="pg-hdr">
     <div><div class="pg-title">Vendors &amp; Partners</div><div class="pg-sub">Master data management</div></div>
-    <div class="pg-actions"><button class="btn btn-sm" onclick="addVendorPrompt()">+ Vendor</button><button class="btn btn-sm" onclick="addPartnerPrompt()">+ Partner</button></div>
+    <div class="pg-actions"><button class="btn btn-sm" onclick="showAddVendorModal()">+ Vendor</button><button class="btn btn-sm" onclick="addPartnerPrompt()">+ Partner</button></div>
   </div>
   <div id="master-body"><div class="loading"><div class="spinner"></div>Loading...</div></div>
 </div>
@@ -632,21 +687,7 @@ function initUser() {
   }
 }
 
-function saveName() {
-  var n = document.getElementById("name-input").value.trim();
-  var r = document.getElementById("role-input-modal").value;
-  if (!n) { alert("Please enter your name."); return; }
-  currentUser = { name: n, role: r };
-  localStorage.setItem("wodms_user", JSON.stringify(currentUser));
-  document.getElementById("name-modal").style.display = "none";
-  applyUser();
-}
-
-function showNameEdit() {
-  document.getElementById("name-input").value = currentUser.name;
-  document.getElementById("role-input-modal").value = currentUser.role;
-  document.getElementById("name-modal").style.display = "flex";
-}
+// Auth handled by initAuth()
 
 function applyUser() {
   var role = ROLES[currentUser.role] || ROLES.admin;
@@ -911,12 +952,38 @@ function doCreateToken(){
   var skuRows=document.querySelectorAll("#s1-sku-body tr"),skus=[];
   skuRows.forEach(function(tr){var inp=tr.querySelectorAll("input");if(inp.length>=4&&inp[0].value)skus.push({skuCode:inp[0].value,description:inp[1].value,poQty:parseInt(inp[2].value)||0,shipQty:parseInt(inp[3].value)||0});});
   var btn=event.currentTarget;btn.textContent="Creating...";btn.disabled=true;
-  apiPost({action:"createToken",data:{manufacturerName:vs.options[vs.selectedIndex].text,vendorCode:vs.value,vendorPOC:document.getElementById("s1-poc-name").value,vendorPOCMobile:document.getElementById("s1-poc-mob").value,dropLocation:getR("s1-drop"),productType:getR("s1-ptype"),transitMode:getR("s1-transit"),numberOfBoxes:boxes,weight:document.getElementById("s1-wt").value,vehicleSize:document.getElementById("s1-veh").value,poNumber:document.getElementById("s1-po").value,skus:skus}},function(res){
+  apiPost({action:"createToken",data:{
+    manufacturerName:vs.options[vs.selectedIndex].text,vendorCode:vs.value,
+    vendorPOC:document.getElementById("s1-poc-name").value,
+    vendorPOCMobile:document.getElementById("s1-poc-mob").value,
+    dropLocation:getR("s1-drop"),productType:getR("s1-ptype"),
+    transitMode:getR("s1-transit"),numberOfBoxes:boxes,
+    weightMT:document.getElementById("s1-wt").value,
+    vehicleSize:document.getElementById("s1-veh").value,
+    poNumber:document.getElementById("s1-po").value,
+    invoiceNumber:document.getElementById("s1-invoice-num").value,
+    skus:skus,
+    createdBy:currentUser.name||"Supply Planning"
+  }},function(res){
     btn.textContent="Create Shipment Token";btn.disabled=false;
     if(res.error){alert("Error: "+res.error);return;}
-    if(res.blocked){var msg="Token blocked:\n";(res.errors||[]).forEach(function(e){msg+="\n• "+e.message;});alert(msg);return;}
-    var ok=document.getElementById("s1-ok");ok.textContent="Token "+res.tokenId+" created. Status: "+res.status;ok.style.display="block";
-    setTimeout(function(){ok.style.display="none";},6000);clearS1();
+    if(res.blocked){
+      var msg="Token blocked — PO validation failed:\n\n";
+      (res.errors||[]).forEach(function(e){msg+="• "+e.message+"\n";});
+      alert(msg);return;
+    }
+    var ok=document.getElementById("s1-ok");
+    var warnMsg = res.warnings&&res.warnings.length ? "\n⚠ " + res.warnings.map(function(w){return w.message;}).join("\n⚠ ") : "";
+    ok.textContent="Token "+res.tokenId+" created. Status: "+res.status+warnMsg;
+    ok.style.display="block";
+    // Show Drive folder link
+    if(res.driveFolderUrl){
+      document.getElementById("s1-drive-info").style.display="block";
+      var link=document.getElementById("s1-drive-link");
+      link.href=res.driveFolderUrl;
+      link.textContent="Open Drive folder for "+res.tokenId+" → upload invoice here";
+    }
+    setTimeout(function(){ok.style.display="none";},8000);
   });
 }
 function clearS1(){
@@ -1248,9 +1315,210 @@ function loadMaster(){
 function addVendorPrompt(){var n=prompt("Vendor name?");if(!n)return;apiPost({action:"addVendor",data:{name:n,pocName:"",pocMobile:"",pocEmail:"",city:"",defaultTransit:"Surface",preferredLP:""}},function(r){if(r.success)loadMaster();});}
 function addPartnerPrompt(){var n=prompt("Partner name?");if(!n)return;apiPost({action:"addPartner",data:{name:n,contactName:"",mobile:"",email:""}},function(r){if(r.success)loadMaster();});}
 
+// ── AUTH ─────────────────────────────────────────────────────────
+var currentUser = { name:"", email:"", role:"", userId:"" };
+
+function doLogin() {
+  var email = document.getElementById("login-email").value.trim().toLowerCase();
+  if (!email) { showLoginErr("Please enter your email address."); return; }
+  var btn = document.getElementById("login-btn");
+  btn.textContent = "Verifying..."; btn.disabled = true;
+  document.getElementById("login-err").style.display = "none";
+  apiGet({ action:"loginCheck", email:email }, function(res) {
+    btn.textContent = "Sign In"; btn.disabled = false;
+    if (!res.success) { showLoginErr(res.message || "Login failed."); return; }
+    currentUser = { name:res.name, email:res.email, role:res.role, userId:res.userId, dept:res.dept||"" };
+    localStorage.setItem("wodms_session", JSON.stringify(currentUser));
+    document.getElementById("login-modal").style.display = "none";
+    applyUser();
+    loadDash();
+  });
+}
+
+function showLoginErr(msg) {
+  var el = document.getElementById("login-err");
+  el.textContent = msg; el.style.display = "block";
+}
+
+function signOut() {
+  localStorage.removeItem("wodms_session");
+  location.reload();
+}
+
+function initAuth() {
+  var saved = localStorage.getItem("wodms_session");
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      // Re-verify with backend on load
+      apiGet({ action:"loginCheck", email:currentUser.email }, function(res) {
+        if (!res.success) {
+          localStorage.removeItem("wodms_session");
+          document.getElementById("login-modal").style.display = "flex";
+          return;
+        }
+        currentUser = { name:res.name, email:res.email, role:res.role, userId:res.userId, dept:res.dept||"" };
+        localStorage.setItem("wodms_session", JSON.stringify(currentUser));
+        document.getElementById("login-modal").style.display = "none";
+        applyUser();
+        loadDash();
+      });
+    } catch(e) {
+      document.getElementById("login-modal").style.display = "flex";
+    }
+  } else {
+    document.getElementById("login-modal").style.display = "flex";
+  }
+}
+
+// ── USER MANAGEMENT ───────────────────────────────────────────────
+function loadScreen(id) {
+  if (id==="dashboard") loadDash();
+  else if (id==="register") loadReg();
+  else if (id==="step1") loadS1();
+  else if (id==="step2") loadS2();
+  else if (id==="step3") loadS3();
+  else if (id==="step5") loadS5();
+  else if (id==="step7") loadS7();
+  else if (id==="master") loadMaster();
+  else if (id==="users") loadUsers();
+}
+
+function loadUsers() {
+  document.getElementById("users-tbl").innerHTML = '<div class="loading" style="padding:20px"><div class="spinner"></div></div>';
+  apiGet({action:"getUsers"}, function(users) {
+    if (!Array.isArray(users)) { document.getElementById("users-tbl").innerHTML = '<div style="padding:20px;color:var(--red)">Failed to load users.</div>'; return; }
+    var roleColors = {admin:"b-blue",supply_planning:"b-teal",logistics_team:"b-purple",logistics_partner:"b-orange",security:"b-red",warehouse:"b-green",approver:"b-amber"};
+    document.getElementById("users-tbl").innerHTML = '<table><thead><tr>' +
+      '<th>User ID</th><th>Name</th><th>Email</th><th>Role</th><th>Dept</th><th>Status</th><th>Created</th><th>Actions</th>' +
+      '</tr></thead><tbody>' +
+      users.map(function(u) {
+        var rc = roleColors[u.role] || "b-gray";
+        var statusBadge = u.status === "Active" ? '<span class="badge b-green">Active</span>' : '<span class="badge b-red">Inactive</span>';
+        return '<tr>' +
+          '<td class="mono" style="font-size:10px">' + u.userId + '</td>' +
+          '<td style="font-weight:500">' + u.name + '</td>' +
+          '<td class="mono" style="font-size:11px">' + u.email + '</td>' +
+          '<td><span class="badge ' + rc + '">' + u.role.replace("_"," ") + '</span></td>' +
+          '<td>' + (u.dept||"—") + '</td>' +
+          '<td>' + statusBadge + '</td>' +
+          '<td style="font-size:10px;color:var(--faint)">' + u.created + '</td>' +
+          '<td><button class="btn btn-sm" style="font-size:10px" onclick="deactivateUser('' + u.userId + '','' + u.name + '')">' +
+          (u.status === "Active" ? "Deactivate" : "Reactivate") + '</button></td>' +
+          '</tr>';
+      }).join("") + '</tbody></table>';
+  });
+}
+
+function showAddUser() { document.getElementById("add-user-form").style.display = "block"; }
+function hideAddUser() { document.getElementById("add-user-form").style.display = "none"; }
+
+function doCreateUser() {
+  var name  = document.getElementById("nu-name").value.trim();
+  var email = document.getElementById("nu-email").value.trim().toLowerCase();
+  var role  = document.getElementById("nu-role").value;
+  var dept  = document.getElementById("nu-dept").value.trim();
+  if (!name || !email) { document.getElementById("nu-result").innerHTML = '<div class="al-err alert" style="font-size:11px">Name and email are required.</div>'; return; }
+  var btn = event.currentTarget; btn.textContent = "Creating..."; btn.disabled = true;
+  apiPost({ action:"createUser", data:{ name:name, email:email, role:role, dept:dept }}, function(res) {
+    btn.textContent = "Create User & Send Welcome Email"; btn.disabled = false;
+    if (res.error) { document.getElementById("nu-result").innerHTML = '<div class="al-err alert" style="font-size:11px">' + res.error + '</div>'; return; }
+    document.getElementById("nu-result").innerHTML = '<div class="al-ok alert" style="font-size:11px">User ' + name + ' created (' + res.userId + '). Welcome email sent.</div>';
+    document.getElementById("nu-name").value = "";
+    document.getElementById("nu-email").value = "";
+    document.getElementById("nu-dept").value = "";
+    loadUsers();
+  });
+}
+
+function deactivateUser(uid, name) {
+  if (!confirm("Deactivate " + name + "? They will lose access immediately.")) return;
+  apiPost({ action:"deactivateUser", data:{ userId:uid }}, function(res) {
+    if (res.success) loadUsers();
+    else alert("Error: " + (res.error||"Unknown"));
+  });
+}
+
+// ── VENDOR MODAL ──────────────────────────────────────────────────
+function showAddVendorModal() { document.getElementById("vendor-modal").style.display = "flex"; }
+function hideVendorModal() { document.getElementById("vendor-modal").style.display = "none"; }
+
+function doAddVendor() {
+  var name = document.getElementById("vm-name").value.trim();
+  var city = document.getElementById("vm-city").value.trim();
+  var addr = document.getElementById("vm-address").value.trim();
+  var pin  = document.getElementById("vm-pin").value.trim();
+  var poc  = document.getElementById("vm-poc-name").value.trim();
+  var mob  = document.getElementById("vm-poc-mob").value.trim();
+  if (!name||!city||!addr||!pin||!poc||!mob) {
+    document.getElementById("vm-err").textContent = "Please fill all required fields (marked *).";
+    document.getElementById("vm-err").style.display = "block"; return;
+  }
+  document.getElementById("vm-err").style.display = "none";
+  apiPost({action:"addVendor",data:{
+    name:name, address:addr, city:city, pincode:pin,
+    pocName:poc, pocMobile:mob,
+    pocEmail:document.getElementById("vm-poc-email").value.trim(),
+    defaultTransit:document.getElementById("vm-transit").value,
+    preferredLP:document.getElementById("vm-lp").value.trim()
+  }}, function(res) {
+    if (res.error) { document.getElementById("vm-err").textContent = res.error; document.getElementById("vm-err").style.display = "block"; return; }
+    hideVendorModal();
+    ["vm-name","vm-city","vm-address","vm-pin","vm-poc-name","vm-poc-mob","vm-poc-email","vm-lp"].forEach(function(id){document.getElementById(id).value="";});
+    loadMaster();
+  });
+}
+
+// ── DRIVE LINK for invoice ────────────────────────────────────────
+function openDriveFolder(url, tokenId) {
+  if (url && url.startsWith("http")) {
+    window.open(url, "_blank");
+  } else {
+    // Fetch on-demand
+    apiGet({action:"getDriveLink",tokenId:tokenId}, function(res) {
+      if (res.success) window.open(res.url, "_blank");
+      else alert("Could not get Drive folder: " + (res.error||"Unknown error"));
+    });
+  }
+}
+
 // ── INIT ─────────────────────────────────────────────────────────
-document.getElementById("name-modal").style.display = "none";
-initUser();
+initAuth();
 </script>
+
+<!-- ADD VENDOR MODAL -->
+<div id="vendor-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:24px;width:500px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto">
+    <div style="font-size:14px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+      Add Manufacturing Vendor
+      <button class="btn btn-sm" onclick="hideVendorModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="fg"><label>Vendor Name *</label><input id="vm-name" placeholder="e.g. Himalaya Wellness"></div>
+      <div class="fg"><label>City *</label><input id="vm-city" placeholder="e.g. Dehradun"></div>
+    </div>
+    <div class="fg"><label>Address *</label><input id="vm-address" placeholder="Full street address"></div>
+    <div class="form-grid">
+      <div class="fg"><label>Pincode *</label><input id="vm-pin" placeholder="e.g. 248001" maxlength="6"></div>
+      <div class="fg"><label>Default Transit Mode</label>
+        <select id="vm-transit"><option value="Surface">Surface</option><option value="Air">Air</option><option value="Train">Train</option></select>
+      </div>
+    </div>
+    <div class="sdiv">POC Details</div>
+    <div class="form-grid">
+      <div class="fg"><label>POC Name *</label><input id="vm-poc-name" placeholder="Contact person name"></div>
+      <div class="fg"><label>POC Mobile *</label><input id="vm-poc-mob" placeholder="+91 98765 43210"></div>
+    </div>
+    <div class="form-grid">
+      <div class="fg"><label>POC Email</label><input id="vm-poc-email" type="email" placeholder="poc@vendor.com"></div>
+      <div class="fg"><label>Preferred Logistics Partner</label><input id="vm-lp" placeholder="e.g. Shree Logistics"></div>
+    </div>
+    <div id="vm-err" class="al-err alert" style="display:none;font-size:11px"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary" onclick="doAddVendor()">Save Vendor</button>
+      <button class="btn" onclick="hideVendorModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
