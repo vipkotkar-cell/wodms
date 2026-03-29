@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=1200,initial-scale=1">
 <title>Inbound Ops Central — Mosaic Wellness</title>
 <style>
 :root{
@@ -12,11 +12,11 @@
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);line-height:1.5}
-.layout{display:flex;height:100vh;overflow:hidden}
+body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);line-height:1.5;min-width:1100px}
+.layout{display:flex;height:100vh;overflow:hidden;min-width:1100px}
 
 /* SIDEBAR */
-.sidebar{width:210px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
 .sidebar-header{padding:16px 14px 12px;border-bottom:1px solid var(--border)}
 .sidebar-logo{font-size:15px;font-weight:600;color:var(--blue);letter-spacing:-.3px}
 .sidebar-sub{font-size:11px;color:var(--muted);margin-top:2px}
@@ -30,12 +30,12 @@ body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--b
 /* MAIN */
 .main{flex:1;overflow-y:auto;background:var(--bg)}
 .topbar{background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
-.topbar-title{font-size:16px;font-weight:600;color:var(--text)}
+.topbar-title{font-size:17px;font-weight:600;color:var(--text)}
 .topbar-sub{font-size:12px;color:var(--muted);margin-left:4px}
 .sync-badge{margin-left:auto;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .dot-live{width:7px;height:7px;border-radius:50%;background:#15803D;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.content{padding:20px 24px}
+.content{padding:20px 28px;max-width:100%}
 .screen{display:none}
 .screen.active{display:block}
 
@@ -47,15 +47,15 @@ body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--b
 .kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
 .kpi{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;border-top:3px solid transparent}
 .kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px}
-.kpi-val{font-size:26px;font-weight:600}
+.kpi-val{font-size:28px;font-weight:700}
 .kpi-sub{font-size:10px;color:var(--faint);margin-top:2px}
 
 /* BUCKETS */
 .bucket-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
 .bucket{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .12s;border-top:3px solid transparent}
 .bucket:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);transform:translateY(-1px)}
-.bucket-num{font-size:30px;font-weight:700;margin-bottom:2px}
-.bucket-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.bucket-num{font-size:32px;font-weight:700;margin-bottom:4px}
+.bucket-label{font-size:12px;color:var(--muted);margin-bottom:6px}
 .bucket-action{font-size:11px;font-weight:500}
 
 /* CAPACITY BAR */
@@ -72,7 +72,7 @@ body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--b
 
 /* TABLE */
 .tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:var(--muted);background:var(--bg2);border-bottom:1px solid var(--border)}
 td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
 tr:last-child td{border-bottom:none}
@@ -156,13 +156,10 @@ textarea{resize:vertical;min-height:80px}
 .spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* RESPONSIVE */
-@media(max-width:700px){
-  .sidebar{display:none}
-  .bucket-grid{grid-template-columns:1fr 1fr}
-  .kpi-row{grid-template-columns:1fr 1fr}
-  .dock-grid{grid-template-columns:repeat(4,1fr)}
-  .form-grid,.form-grid3{grid-template-columns:1fr}
+/* RESPONSIVE - enforce desktop layout always */
+@media(max-width:1100px){
+  .kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bucket-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 </style>
 </head>
@@ -174,7 +171,7 @@ textarea{resize:vertical;min-height:80px}
 <nav class="sidebar">
   <div class="sidebar-header" style="padding:14px 14px 12px">
     <img src="data:image/png;base64,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" alt="Mosaic Wellness" style="width:100%;max-width:140px;height:auto;display:block;margin-bottom:10px;object-fit:contain">
-    <div class="sidebar-logo" style="font-size:16px;line-height:1.25">Inbound Ops Central</div>
+    <div class="sidebar-logo" style="font-size:15px;font-weight:700;line-height:1.25">Inbound Ops Central</div>
     <div class="sidebar-sub" style="font-size:12px;margin-top:5px;line-height:1.4">Vendor Pickup &amp; Warehouse<br>Appointment Scheduling</div>
   </div>
   </div>
