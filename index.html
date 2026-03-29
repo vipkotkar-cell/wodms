@@ -253,7 +253,7 @@ textarea{resize:vertical;min-height:60px}
 </div>
 
 <!-- LOGIN MODAL -->
-<div id="login-modal" style="position:fixed;inset:0;background:var(--nav-bg);z-index:999;display:flex;align-items:center;justify-content:center">
+<div id="login-modal" style="position:fixed;inset:0;background:var(--nav-bg);z-index:999;display:none;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:12px;padding:32px;width:360px;box-shadow:0 24px 80px rgba(0,0,0,.4)">
     <div style="text-align:center;margin-bottom:24px">
       <img src="data:image/png;base64,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" alt="Mosaic" style="height:36px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto">
@@ -1371,7 +1371,7 @@ function signOut() {
   location.reload();
 }
 
-function initAuth() {
+function initAuth_disabled() {
   var saved = localStorage.getItem("wodms_session");
   if (saved) {
     try {
@@ -1508,8 +1508,11 @@ function openDriveFolder(url, tokenId) {
   }
 }
 
-// ── INIT ─────────────────────────────────────────────────────────
-initAuth();
+// ── INIT — Auth disabled for testing, auto-login as Admin ──────────
+document.getElementById("login-modal").style.display = "none";
+currentUser = { name:"Admin", email:"admin@mosaicwellness.in", role:"admin", userId:"USR-0001", dept:"" };
+applyUser();
+loadDash();
 </script>
 
 <!-- ADD VENDOR MODAL -->
