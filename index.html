@@ -715,7 +715,7 @@ function goTo(s) {
   if (el) el.click();
 }
 
-function refresh() {
+function doRefresh() {
   var a = document.querySelector(".ni.on");
   if (a) onScreen(a.getAttribute("data-s"));
 }
@@ -863,7 +863,7 @@ function kpi(l,v,s,c) {
     '<div class="ks">'+s+'</div></div>';
 }
 function bkt(n,v,l,c,s) {
-  return '<div class="bkt" style="border-top-color:'+c+'" onclick="goTo(''+s+'')">'+
+  return '<div class="bkt" style="border-top-color:'+c+'" data-goto="'+s+'">'+
     '<div class="bn" style="color:'+c+'">'+(v||0)+'</div>'+
     '<div class="bl">Step '+n+'<br>'+l+'</div></div>';
 }
@@ -1069,7 +1069,7 @@ function loadS2(){
         '<div class="tact">'+
         (pend?'<span class="badge ba">Awaiting Approval</span>':
           '<select id="lp-'+t.id+'" style="width:180px;font-size:11px"><option value="">Select partner...</option>'+opts+'</select>'+
-          '<button class="btn btnp btns" onclick="doAssign(''+t.id+'',this)">Assign</button>')+
+          '<button class="btn btnp btns" data-tid="'+t.id+'" onclick="doAssign(this.dataset.tid,this)">Assign</button>')+
         '</div></div>';
     }).join("");
   });
@@ -1119,11 +1119,11 @@ function loadS3(){
         '</div>'+
         '<div class="fg"><label>Vehicle Size</label><div class="rrow" id="vs-'+t.id+'">'+
         ["14 feet","20 feet","24 feet","32 feet"].map(function(v,i){
-          return'<div class="ro'+(i===2?" on":"")+'" data-v="'+v+'" onclick="pickR(this,'vs-'+t.id+'')">'+
+          return'<div class="ro'+(i===2?" on":"")+'" data-v="'+v+'" data-grp="vs-'+t.id+'" onclick="pickR(this,this.dataset.grp)">'+
             '<div class="rcirc"><div class="rdot2"></div></div>'+v+'</div>';
         }).join("")+'</div></div>'+
         '<div id="del-'+t.id+'" class="al as" style="display:none;font-size:11px;margin-top:6px"></div>'+
-        '<div style="margin-top:8px"><button class="btn btnp btns" onclick="doPickup(''+t.id+'',this)">Submit Pickup Details</button></div>'+
+        '<div style="margin-top:8px"><button class="btn btnp btns" data-tid="'+t.id+'" onclick="doPickup(this.dataset.tid,this)">Submit Pickup Details</button></div>'+
         '</div></div>';
     }).join("");
   });
@@ -1193,7 +1193,7 @@ function gateIn(){
       '<div><label>Dock</label><select id="gi-dk" style="width:130px">'+
       [13,14,15,16,17,18,19].map(function(d){return'<option'+(d===15?" selected":"")+'>Dock '+d+'</option>';}).join("")+
       '</select></div>'+
-      '<button class="btn btng btns" onclick="confirmGateIn(''+t.id+'')">Confirm Gate In</button></div>'+
+      '<button class="btn btng btns" data-tid="'+t.id+'" onclick="confirmGateIn(this.dataset.tid)">Confirm Gate In</button></div>'+
       '<div id="gi-done"></div>';
   });
 }
@@ -1220,7 +1220,7 @@ function loadS5(){
         '<div class="tid">'+t.id+'</div>'+
         '<div class="ttitle">'+t.vendor+' — '+t.boxes+' boxes</div>'+
         '<div class="tmeta">Dock: '+t.dock+' | '+t.drop+'</div></div>'+
-        '<div class="tact"><button class="btn btnp btns" onclick="alert('Unloading started for '+t.id+'')">Start Unloading</button></div>'+
+        '<div class="tact"><button class="btn btnp btns" data-tid="'+t.id+'" onclick="alert('Unloading started for token: '+this.dataset.tid)">Start Unloading</button></div>'+
         '</div>';
     }).join("");
   });
@@ -1236,7 +1236,7 @@ function gateOut(){
     '<div class="al as" style="margin-bottom:8px">'+
     '<b>Clearance granted</b> — '+v+'<br>'+
     'Unloading complete | POD signed<br><br>'+
-    '<button class="btn btng btns" onclick="confirmGateOut(''+v+'')">Confirm Gate Out</button></div>'+
+    '<button class="btn btng btns" data-veh="'+v+'" onclick="confirmGateOut(this.dataset.veh)">Confirm Gate Out</button></div>'+
     '<div id="go-done"></div>';
 }
 
@@ -1261,7 +1261,7 @@ function loadS7(){
         '<div style="flex:1"><div class="tid">'+t.id+' | Invoice: '+t.invoice+'</div>'+
         '<div class="ttitle">'+t.vendor+' — '+t.po+'</div>'+
         '<div class="tmeta">Drive: <a href="'+(t.driveUrl||"#")+'" target="_blank" style="color:var(--blue)">Open folder</a></div></div>'+
-        '<div class="tact"><button class="btn btnp btns" onclick="doDMS(''+t.id+'',this)">Mark Uploaded &amp; Close</button></div>'+
+        '<div class="tact"><button class="btn btnp btns" data-tid="'+t.id+'" onclick="doDMS(this.dataset.tid,this)">Mark Uploaded &amp; Close</button></div>'+
         '</div>';
     }).join("");
   });
@@ -1374,7 +1374,7 @@ function loadUsers(){
           '<td>'+(u.dept||"—")+'</td>'+
           '<td><span class="badge '+(u.status==="Active"?"bg":"br")+'">'+u.status+'</span></td>'+
           '<td style="font-size:10px;color:var(--faint)">'+u.created+'</td>'+
-          '<td><button class="btn btns" style="font-size:10px" onclick="toggleUser(''+u.id+'',''+u.status+'',''+u.name+'')">'+
+          '<td><button class="btn btns" style="font-size:10px" data-uid="'+u.id+'" data-st="'+u.status+'" data-nm="'+u.name+'" onclick="toggleUser(this.dataset.uid,this.dataset.st,this.dataset.nm)">'+
           (u.status==="Active"?"Deactivate":"Reactivate")+'</button></td></tr>';
       }).join("")+'</tbody></table>';
   });
@@ -1435,9 +1435,9 @@ function buildCal(containerId, date, tokens, clickFn) {
   var html='<div class="chdr">'+
     '<div style="font-size:13px;font-weight:600">'+MONTHS[m]+' '+y+'</div>'+
     '<div style="display:flex;gap:6px">'+
-    '<button class="btn btns" onclick="calNav(''+containerId+'',-1,''+clickFn+'')">&#8592;</button>'+
-    '<button class="btn btns" onclick="calNav(''+containerId+'',0,''+clickFn+'')">Today</button>'+
-    '<button class="btn btns" onclick="calNav(''+containerId+'',1,''+clickFn+'')">&#8594;</button>'+
+    '<button class="btn btns" onclick="calNav(this.getAttribute(\"data-cid\"),-1,this.getAttribute(\"data-fn\"))">&#8592;</button>'+
+    '<button class="btn btns" onclick="calNav(this.getAttribute(\"data-cid\"),0,this.getAttribute(\"data-fn\"))">Today</button>'+
+    '<button class="btn btns" onclick="calNav(this.getAttribute(\"data-cid\"),1,this.getAttribute(\"data-fn\"))">&#8594;</button>'+
     '</div></div>'+
     '<div class="cgrid">'+
     DAYS.map(function(d){return'<div class="cdh">'+d+'</div>';}).join("");
@@ -1445,7 +1445,7 @@ function buildCal(containerId, date, tokens, clickFn) {
   for(var day=1;day<=daysInMonth;day++){
     var isToday=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===day;
     var apts=map[day]||[];
-    html+='<div class="cc'+(isToday?" today":"")+'" onclick="'+clickFn+'('+day+','+m+','+y+')">'+
+    html+='<div class="cc'+(isToday?" today":"")+'" data-fn="'+clickFn+'" data-d="'+day+'" data-m="'+m+'" data-y="'+y+'" onclick="window[this.dataset.fn](parseInt(this.dataset.d),parseInt(this.dataset.m),parseInt(this.dataset.y))">'+
       '<div class="cdate">'+day+'</div>'+
       apts.slice(0,3).map(function(t){
         var cls=t.status==="In-Transit"?"tran":t.status==="Partner Assigned"?"pend":"conf";
