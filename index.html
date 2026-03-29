@@ -650,7 +650,7 @@ textarea{resize:vertical;min-height:60px}
 </div><!-- /shell -->
 
 <script>
-var API = "https://script.google.com/macros/s/AKfycbzzRymTV7OquVRttVrT01lPOb4s5gw40z-XqU7rReHdH9vvJkDlzGwsYmxMtVJHnEalpQ/exec";
+var API = "https://script.google.com/macros/s/AKfycbxUzRvBkToBnGRY6voW0oMQvV4D9Ub8TA_ML8jfk5j0xETcLOogcZxwnqvvcZ6vumUcpw/exec";
 
 // ── ROLES CONFIG ─────────────────────────────────────────────────
 var ROLES = {
@@ -820,7 +820,7 @@ var dockSt=["free","busy","busy","free","buf","busy","free"];
 function loadDash() {
   document.getElementById("welcome-loading").style.display="block";
   document.getElementById("welcome-content").style.display="none";
-  apiGet({action:"getDashboard"}, function(d) {
+  apiGet({action:"dash"}, function(d) {
     if (d.error) { document.getElementById("welcome-loading").innerHTML='<div style="color:var(--muted);padding:20px">Could not connect to backend.</div>'; return; }
     document.getElementById("welcome-loading").style.display="none";
     document.getElementById("welcome-content").style.display="block";
@@ -872,7 +872,7 @@ function loadDash() {
       return '<div class="dock '+cls+'">'+n+'<span>'+lbl+"</span></div>";
     }).join("");
 
-    apiGet({action:"getTokens"}, function(tokens) {
+    apiGet({action:"tokens"}, function(tokens) {
       if (!Array.isArray(tokens)) tokens=[];
       document.getElementById("recent-count").textContent=tokens.length+" total";
       document.getElementById("recent-tbl").innerHTML = tokens.length===0
@@ -889,7 +889,7 @@ function loadDash() {
 function loadReg() {
   var step=document.getElementById("reg-filter").value;
   document.getElementById("reg-tbl").innerHTML='<div class="loading" style="padding:20px"><div class="spinner"></div></div>';
-  var p={action:"getTokens"};if(step)p.step=step;
+  var p={action:"tokens"};if(step)p.step=step;
   apiGet(p,function(rows){
     if(!Array.isArray(rows))rows=[];
     if(!rows.length){document.getElementById("reg-tbl").innerHTML='<div style="padding:20px;text-align:center;color:var(--faint)">No records found</div>';return;}
@@ -912,7 +912,7 @@ function exportCSV(){
 // ── STEP 1 ───────────────────────────────────────────────────────
 var vCache=[],pCache=[];
 function loadS1(){
-  apiGet({action:"getVendors"},function(vs){
+  apiGet({action:"vendors"},function(vs){
     if(!Array.isArray(vs))return;vCache=vs;
     var sel=document.getElementById("s1-vendor");
     sel.innerHTML='<option value="">Select vendor...</option>';
@@ -921,18 +921,18 @@ function loadS1(){
   loadPOs();
 }
 function loadPOs(){
-  apiGet({action:"getPOData"},function(d){
+  apiGet({action:"po"},function(d){
     if(d.error)return;
-    document.getElementById("s1-sync-time").textContent=d.lastSync||"—";
+    document.getElementById("s1-sync-time").textContent=(d.lastSync||"—";
     var sel=document.getElementById("s1-po");sel.innerHTML='<option value="">Select PO...</option>';
-    var pos={};(d.pos||[]).forEach(function(p){pos[p.poNumber]=pos[p.poNumber]||[];pos[p.poNumber].push(p);});
+    var pos={};(d.pos||[]).forEach(function(p){pos[p.po]=pos[p.po]||[];pos[p.po].push(p);});
     Object.keys(pos).forEach(function(po){var o=document.createElement("option");o.value=po;o.textContent=po;o.dataset.skus=JSON.stringify(pos[po]);sel.appendChild(o);});
     sel.onchange=function(){
       var opt=sel.options[sel.selectedIndex];if(!opt.dataset.skus)return;
       var skus=JSON.parse(opt.dataset.skus);
       document.getElementById("s1-sku-body").innerHTML=skus.map(function(s){
-        return "<tr><td class='mono'>"+s.skuCode+"</td><td>"+s.description+"</td><td>"+s.pendingQty+"</td>"+
-          "<td><input type='number' value='"+s.pendingQty+"' onchange='chkVar(this,"+s.pendingQty+")'></td>"+
+        return "<tr><td class='mono'>"+s.skuCode+"</td><td>"+s.description+"</td><td>"+s.qty+"</td>"+
+          "<td><input type='number' value='"+s.qty+"' onchange='chkVar(this,"+s.qty+")'></td>"+
           "<td style='color:var(--muted)'>0</td></tr>";
       }).join("");
     };
@@ -1112,7 +1112,7 @@ function renderApptList(containerId,tokens){
       '<div class="appt-info">'+
         '<div class="appt-token">'+t.tokenId+"</div>"+
         '<div class="appt-vendor">'+t.manufacturerName+"</div>"+
-        '<div class="appt-meta">'+t.numberOfBoxes+" boxes | "+t.dropLocation+" | "+t.logisticsPartner+"</div>"+
+        '<div class="appt-meta">'+t.numberOfBoxes+" boxes | "+t.dropLocation+" | "+t.partner+"</div>"+
       "</div>"+
       '<div class="appt-badge">'+sBadge(t.status)+"</div></div>";
   }).join("");
@@ -1120,8 +1120,8 @@ function renderApptList(containerId,tokens){
 
 // ── STEP 2 ───────────────────────────────────────────────────────
 function loadS2(){
-  apiGet({action:"getPartners"},function(pts){if(Array.isArray(pts))pCache=pts;});
-  apiGet({action:"getTokens",step:"1"},function(tokens){
+  apiGet({action:"partners"},function(pts){if(Array.isArray(pts))pCache=pts;});
+  apiGet({action:"tokens",step:"1"},function(tokens){
     var el=document.getElementById("s2-body");
     if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-info alert">No tokens awaiting partner assignment.</div>';return;}
     el.innerHTML=tokens.map(function(t){
@@ -1130,7 +1130,7 @@ function loadS2(){
       return'<div class="tok" id="tok-'+t.tokenId+'">'+
         '<div style="flex:1"><div class="tok-id">'+t.tokenId+'</div>'+
         '<div class="tok-title">'+t.manufacturerName+" — "+t.numberOfBoxes+" boxes</div>"+
-        '<div class="tok-meta">'+t.productType+" | "+t.transitMode+" | "+t.dropLocation+" | "+t.createdAt+"</div></div>"+
+        '<div class="tok-meta">'+t.productType+" | "+t.transit+" | "+t.drop+" | "+t.createdAt+"</div></div>"+
         '<div class="tok-actions">'+
         (isPend?'<span class="badge b-amber">Awaiting Transit Approval</span>':
           '<select id="lp-'+t.tokenId+'" style="width:180px;font-size:11px"><option value="">Select partner...</option>'+pOpts+"</select>"+
@@ -1139,7 +1139,7 @@ function loadS2(){
     }).join("");
   });
   // Load all tokens for calendar
-  apiGet({action:"getTokens"},function(tokens){
+  apiGet({action:"tokens"},function(tokens){
     if(Array.isArray(tokens)){allTokens=tokens;}
     var now=new Date();
     calState.s2={year:now.getFullYear(),month:now.getMonth()};
@@ -1155,7 +1155,7 @@ function s2tab(tab){
 function doAssign(tid,btn){
   var sel=document.getElementById("lp-"+tid);if(!sel||!sel.value){alert("Select a logistics partner.");return;}
   btn.textContent="Assigning...";btn.disabled=true;
-  apiPost({action:"assignPartner",data:{tokenId:tid,partnerName:sel.value}},function(res){
+  apiPost({action:"assignPartner",data:{id:tid,partner:sel.value}},function(res){
     if(res.error){alert("Error: "+res.error);btn.textContent="Assign";btn.disabled=false;return;}
     var card=document.getElementById("tok-"+tid);
     if(card){card.style.opacity=".45";card.querySelector(".tok-actions").innerHTML='<span class="badge b-teal">Assigned to '+sel.value+"</span>";}
@@ -1164,13 +1164,13 @@ function doAssign(tid,btn){
 
 // ── STEP 3 ───────────────────────────────────────────────────────
 function loadS3(){
-  apiGet({action:"getTokens",step:"2"},function(tokens){
+  apiGet({action:"tokens",step:"2"},function(tokens){
     var el=document.getElementById("s3-body");
     if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-info alert">No tokens awaiting pickup details.</div>';return;}
     el.innerHTML=tokens.map(function(t){
       return'<div class="card"><div class="card-hdr">'+
         '<div class="card-hdr-title">'+t.tokenId+" — "+t.manufacturerName+"</div>"+
-        '<div style="font-size:11px;color:var(--muted)">'+t.numberOfBoxes+" boxes | "+t.dropLocation+" | "+t.logisticsPartner+"</div></div>"+
+        '<div style="font-size:11px;color:var(--muted)">'+t.numberOfBoxes+" boxes | "+t.dropLocation+" | "+t.partner+"</div></div>"+
         '<div class="card-body"><div class="form-grid3">'+
         '<div class="fg"><label>LR #</label><input id="lr-'+t.tokenId+'" placeholder="LR-MW-00000"></div>'+
         '<div class="fg"><label>Invoice #</label><input id="inv-'+t.tokenId+'" placeholder="INV-00000"></div>'+
@@ -1188,7 +1188,7 @@ function loadS3(){
     }).join("");
   });
   // Load calendar
-  apiGet({action:"getTokens"},function(tokens){
+  apiGet({action:"tokens"},function(tokens){
     if(Array.isArray(tokens)){allTokens=tokens;}
     var now=new Date();
     calState.s3={year:now.getFullYear(),month:now.getMonth()};
@@ -1211,7 +1211,7 @@ function doPickup(tid,btn){
   var lr=document.getElementById("lr-"+tid).value;if(!lr){alert("Enter LR number.");return;}
   btn.textContent="Submitting...";btn.disabled=true;
   var vs=document.querySelector("#vs-"+tid+" .ro.sel");
-  apiPost({action:"submitPickup",data:{tokenId:tid,lrNumber:lr,invoiceNumber:document.getElementById("inv-"+tid).value,ewbNumber:document.getElementById("ewb-"+tid).value,numberOfBoxes:document.getElementById("bx-"+tid).value,pickupDate:document.getElementById("pd-"+tid).value,vehicleNumber:document.getElementById("vn-"+tid).value,vehicleSize:vs?vs.getAttribute("data-val"):""}},function(res){
+  apiPost({action:"submitPickup",data:{id:tid,lr:lr,invoice:document.getElementById("inv-"+tid).value,ewb:document.getElementById("ewb-"+tid).value,boxes:document.getElementById("bx-"+tid).value,pickupDate:document.getElementById("pd-"+tid).value,vehicle:document.getElementById("vn-"+tid).value,vehicleSize:vs?vs.getAttribute("data-val"):""}},function(res){
     btn.textContent="Submitted";btn.disabled=true;btn.className="btn btn-green btn-sm";
     if(res.deliveryDate){var el=document.getElementById("del-"+tid);el.style.display="block";el.textContent="Appointment: "+res.deliveryDate+" at "+res.appointmentTime;}
     if(res.error)alert("Error: "+res.error);
@@ -1224,7 +1224,7 @@ function doLookupLR(){
   var el=document.getElementById("s4-result");el.innerHTML='<div class="loading" style="padding:12px"><div class="spinner"></div></div>';
   apiGet({action:"lookupLR",lr:lr},function(res){
     if(!res.found||res.error){el.innerHTML='<div class="al-err alert">LR number not found: '+lr+"</div>";return;}
-    var t=res.token;
+    var t=res.token||{};
     el.innerHTML='<div class="al-ok alert" style="margin-bottom:10px"><b>Record found</b> — '+t[0]+"<br>"+
       "Manufacturer: "+t[3]+" | Boxes: "+t[8]+" | Vehicle: "+t[4]+"<br>"+
       "Appointment: "+t[12]+" "+t[13]+" | Dock: "+t[14]+"</div>"+
@@ -1237,14 +1237,14 @@ function doLookupLR(){
 }
 function doInward(tid){
   var dock=document.getElementById("s4-dk").value;
-  apiPost({action:"securityInward",data:{tokenId:tid,dockAssigned:dock,vehicleNumber:document.getElementById("s4-vn").value}},function(res){
+  apiPost({action:"gateIn",data:{lr:document.getElementById("s4-lr").value,dock:dock}},function(res){
     document.getElementById("s4-done").innerHTML='<div class="al-ok alert" style="margin-top:10px">Gate In confirmed. '+dock+" assigned. Entry: "+res.entryTime+".</div>";
   });
 }
 
 // ── STEP 5 ───────────────────────────────────────────────────────
 function loadS5(){
-  apiGet({action:"getTokens",step:"4"},function(tokens){
+  apiGet({action:"tokens",step:"4"},function(tokens){
     var el=document.getElementById("s5-body");
     if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-info alert">No vehicles currently at warehouse for unloading.</div>';return;}
     el.innerHTML=tokens.map(function(t){
@@ -1269,14 +1269,14 @@ function doCheckClearance(){
     '<div id="s6-done"></div>';
 }
 function doExit(v){
-  apiPost({action:"securityOutward",data:{vehicleNumber:v}},function(res){
+  apiPost({action:"gateOut",data:{vehicle:v}},function(res){
     document.getElementById("s6-done").innerHTML='<div class="al-ok alert">Vehicle '+v+" exited at "+(res.exitTime||"—")+". Warehouse team notified for DMS upload.</div>";
   });
 }
 
 // ── STEP 7 ───────────────────────────────────────────────────────
 function loadS7(){
-  apiGet({action:"getTokens",step:"5"},function(tokens){
+  apiGet({action:"tokens",step:"5"},function(tokens){
     var el=document.getElementById("s7-body");
     if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-ok alert">All shipments closed. No DMS uploads pending.</div>';return;}
     el.innerHTML=tokens.map(function(t){
@@ -1291,7 +1291,7 @@ function loadS7(){
 }
 function doDMS(tid,btn){
   btn.textContent="Closing...";btn.disabled=true;
-  apiPost({action:"uploadDMS",data:{tokenId:tid,driveLink:"https://drive.google.com/..."}},function(res){
+  apiPost({action:"closeDMS",data:{id:tid,driveLink:"https://drive.google.com/..."}},function(res){
     if(res.error){alert(res.error);return;}
     btn.textContent="Closed";btn.className="btn btn-green btn-sm";
     document.getElementById("dms-"+tid).style.opacity=".5";
@@ -1300,8 +1300,8 @@ function doDMS(tid,btn){
 
 // ── MASTER ───────────────────────────────────────────────────────
 function loadMaster(){
-  apiGet({action:"getVendors"},function(vs){
-    apiGet({action:"getPartners"},function(ps){
+  apiGet({action:"vendors"},function(vs){
+    apiGet({action:"partners"},function(ps){
       var vr=(vs||[]).map(function(v){
         return"<tr><td class='mono' style='font-size:10px'>"+v.code+"</td><td>"+v.name+"</td><td>"+v.pocName+"</td><td>"+v.pocMobile+"</td><td>"+v.city+"</td>"+
           "<td><span class='badge "+(v.defaultTransit==="Surface"?"b-teal":"b-amber")+"'>"+v.defaultTransit+"</span></td>"+
@@ -1335,11 +1335,11 @@ function doLogin() {
   var btn = document.getElementById("login-btn");
   btn.textContent = "Verifying..."; btn.disabled = true;
   document.getElementById("login-err").style.display = "none";
-  apiGet({ action:"loginCheck", email:email }, function(res) {
+  apiGet({ action:"login", email:email }, function(res) {
     btn.textContent = "Sign In"; btn.disabled = false;
     if (res.error) { showLoginErr("Connection error: " + res.error); return; }
-    if (!res.success) { showLoginErr(res.message || "Login failed."); return; }
-    currentUser = { name:res.name, email:res.email, role:res.role, userId:res.userId, dept:res.dept||"" };
+    if (!res.ok) { showLoginErr(res.msg || "Login failed."); return; }
+    currentUser = { name:res.name, email:res.email, role:res.role, userId:res.id, dept:res.dept||"" };
     localStorage.setItem("wodms_session", JSON.stringify(currentUser));
     document.getElementById("login-modal").style.display = "none";
     applyUser();
@@ -1363,13 +1363,13 @@ function initAuth() {
     try {
       currentUser = JSON.parse(saved);
       // Re-verify with backend on load
-      apiGet({ action:"loginCheck", email:currentUser.email }, function(res) {
+      apiGet({ action:"login", email:currentUser.email }, function(res) {
         if (!res.success) {
           localStorage.removeItem("wodms_session");
           document.getElementById("login-modal").style.display = "flex";
           return;
         }
-        currentUser = { name:res.name, email:res.email, role:res.role, userId:res.userId, dept:res.dept||"" };
+        currentUser = { name:res.name, email:res.email, role:res.role, userId:res.id, dept:res.dept||"" };
         localStorage.setItem("wodms_session", JSON.stringify(currentUser));
         document.getElementById("login-modal").style.display = "none";
         applyUser();
@@ -1398,7 +1398,7 @@ function loadScreen(id) {
 
 function loadUsers() {
   document.getElementById("users-tbl").innerHTML = '<div class="loading" style="padding:20px"><div class="spinner"></div></div>';
-  apiGet({action:"getUsers"}, function(users) {
+  apiGet({action:"users"}, function(users) {
     if (!Array.isArray(users)) { document.getElementById("users-tbl").innerHTML = '<div style="padding:20px;color:var(--red)">Failed to load users.</div>'; return; }
     var roleColors = {admin:"b-blue",supply_planning:"b-teal",logistics_team:"b-purple",logistics_partner:"b-orange",security:"b-red",warehouse:"b-green",approver:"b-amber"};
     document.getElementById("users-tbl").innerHTML = '<table><thead><tr>' +
@@ -1445,7 +1445,7 @@ function doCreateUser() {
 
 function deactivateUser(uid, name) {
   if (!confirm("Deactivate " + name + "? They will lose access immediately.")) return;
-  apiPost({ action:"deactivateUser", data:{ userId:uid }}, function(res) {
+  apiPost({ action:"updateUser", data:{ id:uid, status:"Inactive" }}, function(res) {
     if (res.success) loadUsers();
     else alert("Error: " + (res.error||"Unknown"));
   });
@@ -1487,7 +1487,7 @@ function openDriveFolder(url, tokenId) {
     window.open(url, "_blank");
   } else {
     // Fetch on-demand
-    apiGet({action:"getDriveLink",tokenId:tokenId}, function(res) {
+    apiGet({action:"driveFolder",tokenId:tokenId}, function(res) {
       if (res.success) window.open(res.url, "_blank");
       else alert("Could not get Drive folder: " + (res.error||"Unknown error"));
     });
