@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inbound Ops Central — Mosaic Wellness</title>
+<style>
+:root{
+  --blue:#1F3C88;--teal:#0B7A75;--amber:#D97706;--red:#DC2626;--green:#15803D;--purple:#534AB7;
+  --lblue:#EFF6FF;--lteal:#F0FDF4;--lamber:#FFFBEB;--lred:#FEF2F2;--lgreen:#F0FDF4;--lpur:#EEEDFE;
+  --bg:#F8FAFC;--bg2:#F1F5F9;--card:#fff;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--faint:#94A3B8;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);line-height:1.5}
+.layout{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:210px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-header{padding:16px 14px 12px;border-bottom:1px solid var(--border)}
+.sidebar-logo{font-size:15px;font-weight:600;color:var(--blue);letter-spacing:-.3px}
+.sidebar-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.nav-group{padding:10px 0 4px}
+.nav-group-label{font-size:10px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;padding:0 14px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12.5px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .1s;user-select:none}
+.nav-item:hover{color:var(--text);background:var(--bg)}
+.nav-item.active{color:var(--blue);font-weight:500;border-left-color:var(--blue);background:var(--lblue)}
+.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.topbar-title{font-size:16px;font-weight:600;color:var(--text)}
+.topbar-sub{font-size:12px;color:var(--muted);margin-left:4px}
+.sync-badge{margin-left:auto;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot-live{width:7px;height:7px;border-radius:50%;background:#15803D;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.content{padding:20px 24px}
+.screen{display:none}
+.screen.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;border-top:3px solid transparent}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.kpi-val{font-size:26px;font-weight:600}
+.kpi-sub{font-size:10px;color:var(--faint);margin-top:2px}
+
+/* BUCKETS */
+.bucket-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.bucket{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .12s;border-top:3px solid transparent}
+.bucket:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);transform:translateY(-1px)}
+.bucket-num{font-size:30px;font-weight:700;margin-bottom:2px}
+.bucket-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.bucket-action{font-size:11px;font-weight:500}
+
+/* CAPACITY BAR */
+.cap-bar{background:var(--bg2);border-radius:20px;height:8px;overflow:hidden;margin:6px 0 3px}
+.cap-fill{height:100%;border-radius:20px;background:var(--blue);transition:width .4s}
+
+/* DOCKS */
+.dock-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:8px}
+.dock{border-radius:8px;padding:10px 6px;text-align:center;font-size:11px;font-weight:600;border:1px solid}
+.dock-free{background:var(--lteal);color:var(--green);border-color:#BBF7D0}
+.dock-busy{background:var(--lred);color:var(--red);border-color:#FECACA}
+.dock-buf{background:var(--lamber);color:var(--amber);border-color:#FDE68A}
+.dock span{display:block;font-size:10px;font-weight:400;margin-top:2px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:var(--muted);background:var(--bg2);border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px}
+.b-blue{background:var(--lblue);color:var(--blue)}
+.b-teal{background:var(--lteal);color:var(--teal)}
+.b-amber{background:var(--lamber);color:var(--amber)}
+.b-red{background:var(--lred);color:var(--red)}
+.b-green{background:var(--lgreen);color:var(--green)}
+.b-gray{background:var(--bg2);color:var(--muted)}
+.b-purple{background:var(--lpur);color:var(--purple)}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.form-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px}
+.fgroup{margin-top:14px}
+label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px}
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-size:13px;color:var(--text);background:#fff;font-family:var(--font);outline:none;transition:border-color .1s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,60,136,.08)}
+input[readonly]{background:var(--bg2);color:var(--muted)}
+textarea{resize:vertical;min-height:80px}
+
+/* RADIO GROUPS */
+.radio-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.radio-opt{display:flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--muted);transition:all .1s;user-select:none}
+.radio-opt:hover{border-color:var(--blue);color:var(--blue)}
+.radio-opt.sel{border-color:var(--blue);background:var(--lblue);color:var(--blue);font-weight:500}
+.radio-circle{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.radio-inner{width:6px;height:6px;border-radius:50%;background:currentColor;display:none}
+.radio-opt.sel .radio-inner{display:block}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:#fff;color:var(--text);font-family:var(--font);transition:all .1s;user-select:none}
+.btn:hover{background:var(--bg)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover{background:#0C447C;border-color:#0C447C}
+.btn-teal{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn-teal:hover{background:#085041}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-green:hover{background:#166534}
+.btn-sm{padding:5px 11px;font-size:12px}
+
+/* ALERTS */
+.alert{border-radius:8px;padding:11px 14px;font-size:12.5px;margin-bottom:12px}
+.alert-warn{background:var(--lamber);border:1px solid #FDE68A;color:#92400E}
+.alert-info{background:var(--lblue);border:1px solid #BFDBFE;color:#1E3A8A}
+.alert-success{background:var(--lteal);border:1px solid #BBF7D0;color:#14532D}
+.alert-error{background:var(--lred);border:1px solid #FECACA;color:#7F1D1D}
+
+/* TOKEN CARDS */
+.token-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px}
+.token-id{font-family:monospace;font-size:10px;color:var(--faint);margin-bottom:3px}
+.token-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.token-meta{font-size:11px;color:var(--muted)}
+.token-actions{flex-shrink:0;display:flex;gap:8px;align-items:center}
+
+/* SKU TABLE */
+.sku-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sku-table th{background:var(--bg2);padding:7px 10px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border)}
+.sku-table td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.sku-table tr:last-child td{border-bottom:none}
+.sku-table td input{width:90px;padding:5px 8px;font-size:12px}
+
+/* SECTION DIVIDER */
+.sdiv{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;padding-bottom:8px;border-bottom:1px solid var(--border);margin:16px 0 12px}
+
+/* STEP INDICATOR */
+.step-bar{display:flex;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.step-seg{flex:1;text-align:center;padding:9px 4px;font-size:11px;font-weight:500;border-right:1px solid var(--border);cursor:pointer;transition:all .1s;background:#fff;color:var(--muted)}
+.step-seg:last-child{border-right:none}
+.step-seg.done{background:var(--lteal);color:var(--green)}
+.step-seg.current{background:var(--lblue);color:var(--blue)}
+.step-seg:hover{background:var(--bg)}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .sidebar{display:none}
+  .bucket-grid{grid-template-columns:1fr 1fr}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .dock-grid{grid-template-columns:repeat(4,1fr)}
+  .form-grid,.form-grid3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header" style="padding:14px 14px 12px">
+    <img src="data:image/png;base64,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" alt="Mosaic Wellness" style="width:100%;max-width:140px;height:auto;display:block;margin-bottom:10px;object-fit:contain">
+    <div class="sidebar-logo" style="font-size:16px;line-height:1.25">Inbound Ops Central</div>
+    <div class="sidebar-sub" style="font-size:12px;margin-top:5px;line-height:1.4">Vendor Pickup &amp; Warehouse<br>Appointment Scheduling</div>
+  </div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Dashboard</div>
+    <div class="nav-item active" data-screen="dashboard">
+      <div class="nav-dot" style="background:var(--blue)"></div>Control tower
+    </div>
+    <div class="nav-item" data-screen="register">
+      <div class="nav-dot" style="background:var(--muted)"></div>Shipment register
+    </div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Workflow</div>
+    <div class="nav-item" data-screen="step1">
+      <div class="nav-dot" style="background:var(--blue)"></div>Step 1 — Token creation
+    </div>
+    <div class="nav-item" data-screen="step2">
+      <div class="nav-dot" style="background:var(--teal)"></div>Step 2 — Assign partner
+    </div>
+    <div class="nav-item" data-screen="step3">
+      <div class="nav-dot" style="background:var(--purple)"></div>Step 3 — In-transit
+    </div>
+    <div class="nav-item" data-screen="step4">
+      <div class="nav-dot" style="background:var(--amber)"></div>Step 4 — Security inward
+    </div>
+    <div class="nav-item" data-screen="step5">
+      <div class="nav-dot" style="background:var(--muted)"></div>Step 5 — Security outward
+    </div>
+    <div class="nav-item" data-screen="step6">
+      <div class="nav-dot" style="background:var(--green)"></div>Step 6 — DMS upload
+    </div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Master data</div>
+    <div class="nav-item" data-screen="master">
+      <div class="nav-dot" style="background:var(--muted)"></div>Vendors &amp; partners
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="data:image/png;base64,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" alt="Mosaic Wellness" style="height:28px;width:auto;object-fit:contain">
+    <div>
+      <span class="topbar-title" id="page-title">Control tower</span>
+      <span class="topbar-sub" id="page-sub">All internal teams — live status</span>
+    </div>
+  </div>
+  <div class="sync-badge">
+    <div class="dot-live"></div>
+    <span id="last-sync">Connecting...</span>
+    <button class="btn btn-sm" onclick="refreshCurrentScreen()">Refresh</button>
+  </div>
+</div>
+<div class="content">
+
+<!-- DASHBOARD -->
+<div class="screen active" id="screen-dashboard">
+  <div class="loading" id="dash-loading"><div class="spinner"></div>Loading dashboard...</div>
+  <div id="dash-content" style="display:none">
+    <div class="kpi-row" id="kpi-row"></div>
+    <div class="card" style="padding:14px 16px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:12px;font-weight:600">Daily box capacity</div>
+        <span id="cap-text" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <div class="cap-bar"><div class="cap-fill" id="cap-fill" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-top:2px"><span>0</span><span>1,750</span><span>3,500</span></div>
+    </div>
+    <div class="bucket-grid" id="bucket-grid"></div>
+    <div class="card">
+      <div class="card-title">Dock status — Docks 13-19</div>
+      <div class="dock-grid" id="dock-grid"></div>
+    </div>
+    <div class="card" id="approval-card" style="display:none">
+      <div class="card-title" style="color:var(--amber)">Transit approvals pending</div>
+      <div id="approval-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="screen" id="screen-register">
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <select id="filter-step" style="width:140px" onchange="loadRegister()">
+      <option value="">All steps</option>
+      <option value="1">Step 1</option><option value="2">Step 2</option>
+      <option value="3">Step 3</option><option value="4">Step 4</option>
+      <option value="5">Step 5</option><option value="6">Step 6</option>
+    </select>
+    <button class="btn btn-sm" onclick="exportCSV()">Export CSV</button>
+    <span style="font-size:11px;color:var(--muted);align-self:center;margin-left:auto">Synced to Google Sheets in real time</span>
+  </div>
+  <div class="loading" id="reg-loading"><div class="spinner"></div>Loading shipments...</div>
+  <div class="tbl-wrap" id="reg-table" style="display:none">
+    <table>
+      <thead><tr>
+        <th>Token ID</th><th>PO #</th><th>Invoice #</th><th>Manufacturer</th>
+        <th>Vehicle #</th><th>LR #</th><th>Pickup date</th><th>Boxes</th><th>Drop</th><th>Status</th>
+      </tr></thead>
+      <tbody id="reg-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="screen" id="screen-step1">
+  <div id="s1-alert" class="alert alert-success" style="display:none"></div>
+  <div class="card">
+    <div class="sdiv">Vendor &amp; product details</div>
+    <div class="form-grid">
+      <div class="fgroup" style="margin-top:0">
+        <label>Manufacturing vendor</label>
+        <select id="s1-vendor" onchange="onVendorChange()">
+          <option value="">Select vendor...</option>
+        </select>
+      </div>
+      <div class="fgroup" style="margin-top:0">
+        <label>Drop location</label>
+        <div class="radio-group" id="s1-drop">
+          <div class="radio-opt sel" data-val="Aramex" onclick="pickRadio(this,'s1-drop')"><div class="radio-circle"><div class="radio-inner"></div></div>Aramex</div>
+          <div class="radio-opt" data-val="Servicelink" onclick="pickRadio(this,'s1-drop')"><div class="radio-circle"><div class="radio-inner"></div></div>Servicelink</div>
+          <div class="radio-opt" data-val="Both" onclick="pickRadio(this,'s1-drop')"><div class="radio-circle"><div class="radio-inner"></div></div>Both</div>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label>Vendor POC name</label>
+        <input id="s1-poc-name" placeholder="Auto-filled on vendor selection">
+      </div>
+      <div class="fgroup">
+        <label>Vendor POC mobile</label>
+        <input id="s1-poc-mobile" placeholder="Auto-filled on vendor selection">
+      </div>
+    </div>
+    <div class="form-grid" style="margin-top:4px">
+      <div class="fgroup">
+        <label>Type of product</label>
+        <div class="radio-group" id="s1-ptype">
+          <div class="radio-opt sel" data-val="FG" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>FG</div>
+          <div class="radio-opt" data-val="RM" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>RM</div>
+          <div class="radio-opt" data-val="PM" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>PM</div>
+          <div class="radio-opt" data-val="NPD" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>NPD</div>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label>Transit mode</label>
+        <div class="radio-group" id="s1-transit">
+          <div class="radio-opt sel" data-val="Surface" onclick="pickRadio(this,'s1-transit');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>Surface</div>
+          <div class="radio-opt" data-val="Air" onclick="pickRadio(this,'s1-transit');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>Air</div>
+          <div class="radio-opt" data-val="Train" onclick="pickRadio(this,'s1-transit');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>Train</div>
+        </div>
+      </div>
+    </div>
+    <div id="s1-approval-banner" class="alert alert-warn" style="display:none;margin-top:12px">
+      Approval required — token will be sent to <strong id="s1-approver"></strong> for transit authorization before logistics assignment.
+    </div>
+    <div class="sdiv">Shipment details</div>
+    <div class="form-grid3">
+      <div class="fgroup" style="margin-top:0">
+        <label>Number of pickup boxes</label>
+        <input type="number" id="s1-boxes" placeholder="e.g. 200" oninput="suggestVehicle()">
+      </div>
+      <div class="fgroup" style="margin-top:0">
+        <label>Weight (kg)</label>
+        <input type="number" id="s1-weight" placeholder="e.g. 1200" oninput="suggestVehicle()">
+      </div>
+      <div class="fgroup" style="margin-top:0">
+        <label>Vehicle suggested</label>
+        <input id="s1-vehicle" readonly placeholder="Auto from boxes + weight">
+      </div>
+    </div>
+    <div class="sdiv">PO &amp; SKU details</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <select id="s1-po" style="flex:1;max-width:260px">
+        <option value="">Select PO (from Gmail sync)...</option>
+      </select>
+      <button class="btn btn-sm" onclick="loadPOs()">Sync from Gmail</button>
+      <span id="po-sync-time" style="font-size:11px;color:var(--muted)">Loading...</span>
+    </div>
+    <div id="s1-po-warn" class="alert alert-error" style="display:none">
+      SKU quantity exceeds PO quantity. Please request a PO modification or create a new PO before submitting.
+    </div>
+    <table class="sku-table">
+      <thead><tr><th>SKU #</th><th>Description</th><th>PO qty</th><th>Ship qty</th><th>Variance</th></tr></thead>
+      <tbody id="s1-sku-body">
+        <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">Select a PO to load SKU lines, or add manually below</td></tr>
+      </tbody>
+    </table>
+    <button class="btn btn-sm" style="margin-top:8px" onclick="addSKURow()">+ Add SKU row</button>
+    <div style="margin-top:18px;display:flex;gap:10px">
+      <button class="btn btn-primary" onclick="submitCreateToken()">Create token</button>
+      <button class="btn" onclick="clearStep1()">Clear form</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="screen" id="screen-step2">
+  <div id="s2-content">
+    <div class="loading"><div class="spinner"></div>Loading tokens awaiting assignment...</div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="screen" id="screen-step3">
+  <div id="s3-content">
+    <div class="loading"><div class="spinner"></div>Loading assigned tokens...</div>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="screen" id="screen-step4">
+  <div class="card">
+    <div class="sdiv">Look up by LR number</div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px">
+      <div style="flex:1;max-width:280px"><label>LR # (Lorry Receipt)</label><input id="s4-lr" placeholder="e.g. LR-MW-56789"></div>
+      <button class="btn btn-primary" onclick="doLookupLR()">Look up</button>
+    </div>
+    <div id="s4-result" style="display:none"></div>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="screen" id="screen-step5">
+  <div class="card">
+    <div class="sdiv">Vehicle exit clearance</div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px">
+      <div style="flex:1;max-width:280px"><label>Vehicle registration number</label><input id="s5-vehicle" placeholder="e.g. MH04AB1234"></div>
+      <button class="btn btn-primary" onclick="doCheckClearance()">Check clearance</button>
+    </div>
+    <div id="s5-result" style="display:none"></div>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="screen" id="screen-step6">
+  <div id="s6-content">
+    <div class="loading"><div class="spinner"></div>Loading DMS pending items...</div>
+  </div>
+</div>
+
+<!-- MASTER DATA -->
+<div class="screen" id="screen-master">
+  <div id="master-content">
+    <div class="loading"><div class="spinner"></div>Loading master data...</div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+// ── CONFIG ── Replace with your deployed Apps Script URL
+var API_URL = "https://script.google.com/macros/s/AKfycbzzRymTV7OquVRttVrT01lPOb4s5gw40z-XqU7rReHdH9vvJkDlzGwsYmxMtVJHnEalpQ/exec";
+
+// ── NAVIGATION ──────────────────────────────────────────────
+var PAGE_META = {
+  dashboard: ["Control tower","Inbound Ops Central — Vendor Pickup & Warehouse Scheduling"],
+  register:  ["Shipment register","PO-wise line items — synced to Google Sheets"],
+  step1:     ["Step 1 — Token creation","Owner: Supply Planning Team"],
+  step2:     ["Step 2 — Assign partner","Owner: Logistics Team"],
+  step3:     ["Step 3 — In-transit","Owner: Logistics Partner"],
+  step4:     ["Step 4 — Security inward","Owner: Security Team"],
+  step5:     ["Step 5 — Security outward","Owner: Security Team"],
+  step6:     ["Step 6 — DMS upload","Owner: Warehouse Team"],
+  master:    ["Master data","Admin — vendors, partners, drop locations"]
+};
+
+document.querySelectorAll('.nav-item').forEach(function(item){
+  item.addEventListener('click', function(){
+    var id = this.getAttribute('data-screen');
+    document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+    this.classList.add('active');
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+    document.getElementById('screen-'+id).classList.add('active');
+    document.getElementById('page-title').textContent = PAGE_META[id][0];
+    document.getElementById('page-sub').textContent = PAGE_META[id][1];
+    loadScreen(id);
+  });
+});
+
+function loadScreen(id){
+  if(id==='dashboard') loadDashboard();
+  else if(id==='register') loadRegister();
+  else if(id==='step1') loadStep1();
+  else if(id==='step2') loadStep2();
+  else if(id==='step3') loadStep3();
+  else if(id==='step6') loadStep6();
+  else if(id==='master') loadMaster();
+}
+function refreshCurrentScreen(){
+  var active = document.querySelector('.nav-item.active');
+  if(active) loadScreen(active.getAttribute('data-screen'));
+}
+
+// ── API CALLS ────────────────────────────────────────────────
+function apiGet(params, cb){
+  var url = API_URL + "?" + Object.keys(params).map(function(k){return k+"="+encodeURIComponent(params[k]);}).join("&");
+  fetch(url).then(function(r){return r.json();}).then(cb).catch(function(e){
+    console.error("API error",e);
+    cb({error: e.toString()});
+  });
+}
+function apiPost(data, cb){
+  fetch(API_URL, {method:"POST", body:JSON.stringify(data), headers:{"Content-Type":"application/json"}})
+    .then(function(r){return r.json();}).then(cb).catch(function(e){
+      console.error("API post error",e);
+      cb({error: e.toString()});
+    });
+}
+
+// ── STATUS BADGE ─────────────────────────────────────────────
+function statusBadge(s){
+  var map = {
+    "Pickup Pending":"b-blue","Pending Transit Approval":"b-amber",
+    "Logistics Partner Assigned":"b-teal","In-Transit":"b-purple",
+    "Arrived at Warehouse":"b-amber","Vehicle Exited":"b-gray",
+    "DMS Completed":"b-green","Transit Rejected":"b-red"
+  };
+  return '<span class="badge '+(map[s]||'b-gray')+'">'+s+'</span>';
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function loadDashboard(){
+  document.getElementById('dash-loading').style.display='flex';
+  document.getElementById('dash-content').style.display='none';
+  apiGet({action:"getDashboard"}, function(d){
+    if(d.error){showDashFallback();return;}
+    document.getElementById('dash-loading').style.display='none';
+    document.getElementById('dash-content').style.display='block';
+    document.getElementById('last-sync').textContent='Updated '+d.lastUpdated;
+
+    // KPIs
+    var used = d.capacity.used||0;
+    var pct = Math.round(used/3500*100);
+    document.getElementById('kpi-row').innerHTML =
+      kpiCard("Boxes today",used,"of 3,500 daily capacity","var(--blue)") +
+      kpiCard("Active tokens",(d.counts.step1||0)+(d.counts.step2||0)+(d.counts.step3||0)+(d.counts.step4||0),"across all active steps","var(--teal)") +
+      kpiCard("Arrived today",d.counts.step4||0,"at warehouse docks","var(--amber)") +
+      kpiCard("Approvals pending",d.counts.approvalPending||0,"Air / Train transit","var(--red)");
+
+    // Capacity
+    document.getElementById('cap-fill').style.width=pct+'%';
+    document.getElementById('cap-text').textContent=used+' of 3,500 boxes ('+pct+'%)';
+
+    // Buckets
+    var steps=[
+      {n:d.counts.step1,lbl:"Step 1 — Pickup pending",a:d.pendingActions.step1,amsg:"awaiting logistics assignment",c:"var(--blue)",screen:"step1"},
+      {n:d.counts.step2,lbl:"Step 2 — Partner assignment",a:d.pendingActions.step2,amsg:"awaiting partner selection",c:"var(--teal)",screen:"step2"},
+      {n:d.counts.step3,lbl:"Step 3 — In-transit",a:0,amsg:"vehicles in transit",c:"var(--purple)",screen:"step3"},
+      {n:d.counts.step4,lbl:"Step 4 — Arrived at WH",a:d.pendingActions.step4,amsg:"awaiting dock assignment",c:"var(--amber)",screen:"step4"},
+      {n:d.counts.step5,lbl:"Step 5 — Vehicle exited",a:d.pendingActions.step5,amsg:"awaiting DMS upload",c:"var(--muted)",screen:"step5"},
+      {n:d.counts.step6,lbl:"Step 6 — DMS completed",a:0,amsg:"all done",c:"var(--green)",screen:"step6"}
+    ];
+    document.getElementById('bucket-grid').innerHTML = steps.map(function(s){
+      return '<div class="bucket" style="border-top-color:'+s.c+'" onclick="goScreen(\''+s.screen+'\')">' +
+        '<div class="bucket-num" style="color:'+s.c+'">'+(s.n||0)+'</div>' +
+        '<div class="bucket-label">'+s.lbl+'</div>' +
+        '<div class="bucket-action" style="color:'+(s.a>0?'var(--amber)':'var(--muted)')+'">'+
+          (s.a>0?s.a+' '+s.amsg:'No pending actions')+'</div></div>';
+    }).join('');
+
+    // Docks
+    var docks = [13,14,15,16,17,18,19];
+    var dockStatus = ["free","busy","busy","free","buf","busy","free"];
+    document.getElementById('dock-grid').innerHTML = docks.map(function(d,i){
+      var cls = dockStatus[i]==="free"?"dock-free":dockStatus[i]==="busy"?"dock-busy":"dock-buf";
+      var lbl = dockStatus[i]==="free"?"Free":dockStatus[i]==="buf"?"Buffer":"In use";
+      return '<div class="dock '+cls+'">Dock '+d+'<span>'+lbl+'</span></div>';
+    }).join('');
+  });
+}
+function kpiCard(label,val,sub,color){
+  return '<div class="kpi" style="border-top-color:'+color+'">' +
+    '<div class="kpi-label">'+label+'</div>' +
+    '<div class="kpi-val" style="color:'+color+'">'+val+'</div>' +
+    '<div class="kpi-sub">'+sub+'</div></div>';
+}
+function showDashFallback(){
+  document.getElementById('dash-loading').innerHTML='<div style="color:var(--muted);padding:20px">Connecting to Inbound Ops Central backend...<br>If this persists, check your internet connection.</div>';
+  document.getElementById('dash-loading').style.display='block';
+}
+function goScreen(id){
+  document.querySelector('[data-screen="'+id+'"]').click();
+}
+
+// ── REGISTER ─────────────────────────────────────────────────
+function loadRegister(){
+  var step = document.getElementById('filter-step').value;
+  document.getElementById('reg-loading').style.display='block';
+  document.getElementById('reg-table').style.display='none';
+  var params = {action:"getTokens"};
+  if(step) params.step=step;
+  apiGet(params, function(rows){
+    document.getElementById('reg-loading').style.display='none';
+    document.getElementById('reg-table').style.display='block';
+    if(!Array.isArray(rows)) rows=[];
+    var html = rows.map(function(r){
+      return '<tr>' +
+        '<td style="font-family:monospace;font-size:11px">'+r.tokenId+'</td>' +
+        '<td>'+r.poNumber+'</td><td>'+r.invoiceNumber+'</td>' +
+        '<td>'+r.manufacturerName+'</td><td style="font-family:monospace;font-size:11px">'+r.vehicleNumber+'</td>' +
+        '<td style="font-family:monospace;font-size:11px">'+r.lrNumber+'</td>' +
+        '<td>'+r.pickupDate+'</td><td>'+r.numberOfBoxes+'</td>' +
+        '<td>'+r.dropLocation+'</td><td>'+statusBadge(r.status)+'</td></tr>';
+    }).join('');
+    document.getElementById('reg-body').innerHTML = html || '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--muted)">No shipments found</td></tr>';
+  });
+}
+function exportCSV(){
+  var rows = document.querySelectorAll('#reg-body tr');
+  var csv = "Token ID,PO#,Invoice#,Manufacturer,Vehicle#,LR#,Pickup Date,Boxes,Drop,Status\n";
+  rows.forEach(function(tr){
+    var cells = Array.from(tr.cells).map(function(td){return '"'+td.textContent.trim()+'"';});
+    csv += cells.join(',') + '\n';
+  });
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'WODMS_Register_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+}
+
+// ── STEP 1 ────────────────────────────────────────────────────
+var vendorCache = [];
+function loadStep1(){
+  apiGet({action:"getVendors"}, function(vendors){
+    if(!Array.isArray(vendors)) return;
+    vendorCache = vendors;
+    var sel = document.getElementById('s1-vendor');
+    vendors.forEach(function(v){
+      if(v.active==="Active"||v.active===true){
+        var opt = document.createElement('option');
+        opt.value = v.code;
+        opt.textContent = v.name;
+        opt.dataset.poc = v.pocName;
+        opt.dataset.mobile = v.pocMobile;
+        sel.appendChild(opt);
+      }
+    });
+  });
+  loadPOs();
+}
+function loadPOs(){
+  apiGet({action:"getPOData"}, function(d){
+    if(d.error) return;
+    document.getElementById('po-sync-time').textContent = 'Last sync: '+(d.lastSync||'Unknown');
+    var sel = document.getElementById('s1-po');
+    sel.innerHTML = '<option value="">Select PO...</option>';
+    var pos = {};
+    (d.pos||[]).forEach(function(p){pos[p.poNumber]=pos[p.poNumber]||[];pos[p.poNumber].push(p);});
+    Object.keys(pos).forEach(function(po){
+      var opt = document.createElement('option');
+      opt.value = po;
+      opt.textContent = po + ' — ' + pos[po][0].vendor;
+      opt.dataset.skus = JSON.stringify(pos[po]);
+      sel.appendChild(opt);
+    });
+    sel.onchange = function(){
+      var opt = sel.options[sel.selectedIndex];
+      if(!opt.dataset.skus) return;
+      var skus = JSON.parse(opt.dataset.skus);
+      var html = skus.map(function(s){
+        return '<tr><td style="font-family:monospace;font-size:11px">'+s.skuCode+'</td>' +
+          '<td>'+s.description+'</td><td>'+s.orderedQty+'</td>' +
+          '<td><input type="number" value="'+s.orderedQty+'" onchange="checkVar(this,'+s.orderedQty+')"></td>' +
+          '<td style="color:var(--muted)">0 (exact)</td></tr>';
+      }).join('');
+      document.getElementById('s1-sku-body').innerHTML = html;
+    };
+  });
+}
+function onVendorChange(){
+  var sel = document.getElementById('s1-vendor');
+  var opt = sel.options[sel.selectedIndex];
+  document.getElementById('s1-poc-name').value = opt.dataset.poc || '';
+  document.getElementById('s1-poc-mobile').value = opt.dataset.mobile || '';
+}
+function pickRadio(el, group){
+  document.querySelectorAll('#screen-'+group.split('-').join(' #screen-')+'#'+group+' .radio-opt, [id="'+group+'"] .radio-opt').forEach(function(o){o.classList.remove('sel');});
+  el.closest('.radio-group').querySelectorAll('.radio-opt').forEach(function(o){o.classList.remove('sel');});
+  el.classList.add('sel');
+}
+function getRadio(groupId){
+  var sel = document.querySelector('#'+groupId+' .radio-opt.sel');
+  return sel ? sel.getAttribute('data-val') : '';
+}
+function checkApproval(){
+  var mode = getRadio('s1-transit');
+  var ptype = getRadio('s1-ptype');
+  var banner = document.getElementById('s1-approval-banner');
+  if((mode==='Air'||mode==='Train')&&ptype){
+    var nm = ptype==='FG'?'Manan Shah (manan.shah@mosaicwellness.in)':'Abhinav Gupta (abhinav@mosaicwellness.in)';
+    document.getElementById('s1-approver').textContent=nm;
+    banner.style.display='block';
+  } else {
+    banner.style.display='none';
+  }
+}
+function suggestVehicle(){
+  var b=parseInt(document.getElementById('s1-boxes').value)||0;
+  var w=parseInt(document.getElementById('s1-weight').value)||0;
+  var v = b<=100&&w<=500?'14 feet':b<=300&&w<=1500?'20 feet':b<=600&&w<=3000?'24 feet':'32 feet';
+  document.getElementById('s1-vehicle').value=v;
+}
+function checkVar(inp, poQty){
+  var v=parseInt(inp.value)||0, diff=v-poQty;
+  var varCell=inp.closest('tr').cells[4];
+  var warn=document.getElementById('s1-po-warn');
+  if(diff>0){varCell.textContent='+'+diff+' EXCEEDS PO';varCell.style.color='var(--red)';warn.style.display='block';}
+  else if(diff<0){varCell.textContent=diff+' (partial OK)';varCell.style.color='var(--teal)';warn.style.display='none';}
+  else{varCell.textContent='0 (exact)';varCell.style.color='var(--muted)';warn.style.display='none';}
+}
+function addSKURow(){
+  var tb=document.getElementById('s1-sku-body');
+  var idx=tb.rows.length;
+  var row=tb.insertRow();
+  row.innerHTML='<td><input placeholder="SKU code" style="width:110px"></td><td><input placeholder="Description"></td><td><input type="number" placeholder="PO qty" style="width:80px"></td><td><input type="number" placeholder="Ship qty" style="width:80px"></td><td style="color:var(--muted)">—</td>';
+}
+function submitCreateToken(){
+  var sel=document.getElementById('s1-vendor');
+  if(!sel.value){alert('Please select a manufacturing vendor.');return;}
+  var boxes=parseInt(document.getElementById('s1-boxes').value)||0;
+  if(!boxes){alert('Please enter number of pickup boxes.');return;}
+  var skuRows=document.querySelectorAll('#s1-sku-body tr');
+  var skus=[];
+  skuRows.forEach(function(tr){
+    var inputs=tr.querySelectorAll('input');
+    if(inputs.length>=4&&inputs[0].value){
+      skus.push({skuCode:inputs[0].value,description:inputs[1].value,poQty:parseInt(inputs[2].value)||0,shipQty:parseInt(inputs[3].value)||0});
+    }
+  });
+  var data={
+    action:'createToken',
+    data:{
+      manufacturerName:sel.options[sel.selectedIndex].text,
+      vendorCode:sel.value,
+      vendorPOC:document.getElementById('s1-poc-name').value,
+      vendorPOCMobile:document.getElementById('s1-poc-mobile').value,
+      dropLocation:getRadio('s1-drop'),
+      productType:getRadio('s1-ptype'),
+      transitMode:getRadio('s1-transit'),
+      numberOfBoxes:boxes,
+      weight:document.getElementById('s1-weight').value,
+      vehicleSize:document.getElementById('s1-vehicle').value,
+      poNumber:document.getElementById('s1-po').value,
+      skus:skus
+    }
+  };
+  var btn=event.currentTarget;
+  btn.textContent='Creating...';btn.disabled=true;
+  apiPost(data, function(res){
+    btn.textContent='Create token';btn.disabled=false;
+    if(res.error){alert('Error: '+res.error);return;}
+    var a=document.getElementById('s1-alert');
+    a.textContent='Token '+res.tokenId+' created. Status: '+res.status+'. Logistics Team notified.';
+    a.style.display='block';
+    setTimeout(function(){a.style.display='none';},6000);
+    clearStep1();
+  });
+}
+function clearStep1(){
+  document.getElementById('s1-vendor').selectedIndex=0;
+  document.getElementById('s1-poc-name').value='';
+  document.getElementById('s1-poc-mobile').value='';
+  document.getElementById('s1-boxes').value='';
+  document.getElementById('s1-weight').value='';
+  document.getElementById('s1-vehicle').value='';
+  document.getElementById('s1-sku-body').innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">Select a PO to load SKU lines</td></tr>';
+  document.getElementById('s1-approval-banner').style.display='none';
+  document.getElementById('s1-po-warn').style.display='none';
+}
+
+// ── STEP 2 ────────────────────────────────────────────────────
+var partnerCache=[];
+function loadStep2(){
+  apiGet({action:'getPartners'}, function(pts){if(Array.isArray(pts))partnerCache=pts;});
+  apiGet({action:'getTokens',step:'1'}, function(tokens){
+    var el=document.getElementById('s2-content');
+    if(!Array.isArray(tokens)||tokens.length===0){
+      el.innerHTML='<div class="alert alert-info">No tokens awaiting partner assignment.</div>';return;
+    }
+    var html='<div class="card"><div class="card-title">Tokens awaiting partner assignment ('+tokens.length+')</div>';
+    tokens.forEach(function(t){
+      var pOpts=partnerCache.map(function(p){return '<option value="'+p.name+'">'+p.name+(t.logisticsPartner===p.name?' (Preferred)':'')+'</option>';}).join('');
+      var isPending = t.status==='Pending Transit Approval';
+      html+='<div class="token-card" id="tc-'+t.tokenId+'">' +
+        '<div style="flex:1"><div class="token-id">'+t.tokenId+'</div>' +
+        '<div class="token-title">'+t.manufacturerName+' — '+t.numberOfBoxes+' boxes</div>' +
+        '<div class="token-meta">'+t.productType+' | '+t.transitMode+' | '+t.dropLocation+' | Created '+t.createdAt+'</div></div>' +
+        '<div class="token-actions">' +
+        (isPending?'<span class="badge b-amber">Awaiting transit approval</span>':
+          '<select id="lp-'+t.tokenId+'" style="width:200px"><option value="">Select partner...</option>'+pOpts+'</select>' +
+          '<button class="btn btn-primary btn-sm" onclick="doAssignPartner(\''+t.tokenId+'\',this)">Assign</button>') +
+        '</div></div>';
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  });
+}
+function doAssignPartner(tokenId, btn){
+  var sel=document.getElementById('lp-'+tokenId);
+  if(!sel||!sel.value){alert('Please select a logistics partner.');return;}
+  btn.textContent='Assigning...';btn.disabled=true;
+  apiPost({action:'assignPartner',data:{tokenId:tokenId,partnerName:sel.value}}, function(res){
+    if(res.error){alert('Error: '+res.error);btn.textContent='Assign';btn.disabled=false;return;}
+    var card=document.getElementById('tc-'+tokenId);
+    if(card){card.style.opacity='0.4';card.querySelector('.token-actions').innerHTML='<span class="badge b-teal">Assigned to '+sel.value+'</span>';}
+  });
+}
+
+// ── STEP 3 ────────────────────────────────────────────────────
+function loadStep3(){
+  apiGet({action:'getTokens',step:'2'}, function(tokens){
+    var el=document.getElementById('s3-content');
+    if(!Array.isArray(tokens)||tokens.length===0){
+      el.innerHTML='<div class="alert alert-info">No tokens awaiting pickup details.</div>';return;
+    }
+    var html=tokens.map(function(t){
+      return '<div class="card">' +
+        '<div style="background:var(--lblue);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12px">' +
+        '<strong>'+t.tokenId+'</strong> — '+t.manufacturerName+' | '+t.numberOfBoxes+' boxes | '+t.dropLocation+' | Partner: '+(t.logisticsPartner||'—')+'</div>' +
+        '<div class="sdiv">Enter pickup details</div>' +
+        '<div class="form-grid"><div class="fgroup" style="margin-top:0"><label>LR #</label><input id="lr-'+t.tokenId+'" placeholder="LR-MW-56789"></div>' +
+        '<div class="fgroup" style="margin-top:0"><label>Invoice #</label><input id="inv-'+t.tokenId+'" placeholder="INV-HW-1234"></div>' +
+        '<div class="fgroup"><label>EWB #</label><input id="ewb-'+t.tokenId+'" placeholder="1234 5678 9012"></div>' +
+        '<div class="fgroup"><label>Actual boxes</label><input type="number" id="boxes-'+t.tokenId+'" placeholder="'+t.numberOfBoxes+'"></div>' +
+        '<div class="fgroup"><label>Pickup date</label><input type="date" id="pd-'+t.tokenId+'" onchange="calcDel(this,\''+t.tokenId+'\')"></div>' +
+        '<div class="fgroup"><label>Vehicle #</label><input id="vn-'+t.tokenId+'" placeholder="MH04AB1234"></div></div>' +
+        '<div class="fgroup"><label>Vehicle size</label><div class="radio-group" id="vs-'+t.tokenId+'">' +
+        ['14 feet','20 feet','24 feet','32 feet'].map(function(v,i){return '<div class="radio-opt'+(i===2?' sel':'')+'" data-val="'+v+'" onclick="pickRadio(this,\'vs-'+t.tokenId+'\')"><div class="radio-circle"><div class="radio-inner"></div></div>'+v+'</div>';}).join('') +
+        '</div></div>' +
+        '<div id="del-'+t.tokenId+'" style="display:none" class="alert alert-success"></div>' +
+        '<div style="margin-top:14px"><button class="btn btn-primary" onclick="doSubmitPickup(\''+t.tokenId+'\',this)">Submit pickup details</button></div></div>';
+    }).join('');
+    el.innerHTML=html;
+  });
+}
+function calcDel(inp, tokenId){
+  if(!inp.value)return;
+  var d=new Date(inp.value);d.setDate(d.getDate()+5);
+  var ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  var el=document.getElementById('del-'+tokenId);
+  el.style.display='block';
+  el.textContent='Expected delivery: '+ds+' (Pickup + 5 days). Auto-appointment will be scheduled on submission.';
+}
+function doSubmitPickup(tokenId,btn){
+  var lr=document.getElementById('lr-'+tokenId).value;
+  if(!lr){alert('Please enter LR number.');return;}
+  btn.textContent='Submitting...';btn.disabled=true;
+  var vSel=document.querySelector('#vs-'+tokenId+' .radio-opt.sel');
+  apiPost({action:'submitPickup',data:{
+    tokenId:tokenId,
+    lrNumber:lr,
+    invoiceNumber:document.getElementById('inv-'+tokenId).value,
+    ewbNumber:document.getElementById('ewb-'+tokenId).value,
+    numberOfBoxes:document.getElementById('boxes-'+tokenId).value,
+    pickupDate:document.getElementById('pd-'+tokenId).value,
+    vehicleNumber:document.getElementById('vn-'+tokenId).value,
+    vehicleSize:vSel?vSel.getAttribute('data-val'):''
+  }}, function(res){
+    btn.textContent='Submitted';btn.disabled=true;btn.className='btn btn-green';
+    var el=document.getElementById('del-'+tokenId);
+    if(res.deliveryDate){el.style.display='block';el.textContent='Appointment scheduled: '+res.deliveryDate+' at '+res.appointmentTime+'. Warehouse team notified.';}
+    if(res.error)alert('Error: '+res.error);
+  });
+}
+
+// ── STEP 4 ────────────────────────────────────────────────────
+function doLookupLR(){
+  var lr=document.getElementById('s4-lr').value.trim();
+  if(!lr){alert('Please enter an LR number.');return;}
+  var el=document.getElementById('s4-result');
+  el.style.display='none';
+  apiGet({action:'lookupLR',lr:lr}, function(res){
+    el.style.display='block';
+    if(!res.found||res.error){el.innerHTML='<div class="alert alert-error">LR number not found: '+lr+'</div>';return;}
+    var t=res.token;
+    el.innerHTML='<div class="alert alert-success" style="margin-bottom:12px">' +
+      '<strong>Record found</strong> — '+t[0]+'<br>' +
+      'Manufacturer: '+t[3]+' | Partner: '+t[19]+' | Boxes: '+t[8]+' | Vehicle: '+t[4]+'<br>' +
+      'Appointment: '+t[12]+' '+t[13]+' | Dock scheduled: '+t[14]+'</div>' +
+      '<div style="display:flex;gap:10px;align-items:flex-end">' +
+      '<div style="flex:1;max-width:260px"><label>Confirm vehicle # at gate</label><input id="s4-vn" value="'+t[4]+'" placeholder="Vehicle number"></div>' +
+      '<div style="flex:1;max-width:220px"><label>Assign dock</label><select id="s4-dock">' +
+      [13,14,15,16,17,18,19].map(function(d){return '<option'+(d===15?' selected':'')+'>Dock '+d+'</option>';}).join('')+'</select></div>' +
+      '<button class="btn btn-green" onclick="doConfirmInward(\''+t[0]+'\')">Confirm inward entry</button></div>' +
+      '<div id="s4-done" style="display:none" class="alert alert-success"></div>';
+  });
+}
+function doConfirmInward(tokenId){
+  var dock=document.getElementById('s4-dock').value;
+  apiPost({action:'securityInward',data:{tokenId:tokenId,dockAssigned:dock,vehicleNumber:document.getElementById('s4-vn').value}}, function(res){
+    document.getElementById('s4-done').style.display='block';
+    document.getElementById('s4-done').textContent='Inward entry confirmed. '+dock+' assigned. Entry time: '+res.entryTime+'. Driver notified.';
+  });
+}
+
+// ── STEP 5 ────────────────────────────────────────────────────
+function doCheckClearance(){
+  var v=document.getElementById('s5-vehicle').value.trim();
+  if(!v){alert('Please enter vehicle number.');return;}
+  var el=document.getElementById('s5-result');
+  el.style.display='block';
+  el.innerHTML='<div class="alert alert-success">' +
+    '<strong>Clearance granted</strong> — Vehicle '+v+'<br>' +
+    'Unloading completed | POD signed | TAT: 76 minutes<br><br>' +
+    '<button class="btn btn-green btn-sm" onclick="doConfirmExit(\''+v+'\')">Confirm vehicle exit</button></div>' +
+    '<div id="s5-done" style="display:none" class="alert alert-success"></div>';
+}
+function doConfirmExit(vehicle){
+  apiPost({action:'securityOutward',data:{vehicleNumber:vehicle}}, function(res){
+    document.getElementById('s5-done').style.display='block';
+    document.getElementById('s5-done').textContent='Vehicle '+vehicle+' exited at '+(res.exitTime||'now')+'. Warehouse team notified for DMS upload.';
+  });
+}
+
+// ── STEP 6 ────────────────────────────────────────────────────
+function loadStep6(){
+  apiGet({action:'getTokens',step:'5'}, function(tokens){
+    var el=document.getElementById('s6-content');
+    if(!Array.isArray(tokens)||tokens.length===0){
+      el.innerHTML='<div class="alert alert-success">All DMS uploads complete. No pending items.</div>';return;
+    }
+    var html='<div class="card"><div class="card-title">Pending DMS uploads ('+tokens.length+')</div>';
+    tokens.forEach(function(t){
+      var fname=t.invoiceNumber+'_'+t.poNumber+'_'+new Date().toISOString().split('T')[0].replace(/-/g,'')+'.pdf';
+      html+='<div class="token-card" id="dms-'+t.tokenId+'">' +
+        '<div style="flex:1"><div class="token-id">'+t.tokenId+' | Invoice: '+t.invoiceNumber+'</div>' +
+        '<div class="token-title">'+t.manufacturerName+' — '+t.poNumber+'</div>' +
+        '<div class="token-meta">Vehicle exited | File name: <code>'+fname+'</code></div></div>' +
+        '<div class="token-actions"><button class="btn btn-primary btn-sm" onclick="doDMS(\''+t.tokenId+'\',this)">Mark uploaded</button></div></div>';
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  });
+}
+function doDMS(tokenId,btn){
+  btn.textContent='Saving...';btn.disabled=true;
+  apiPost({action:'uploadDMS',data:{tokenId:tokenId,driveLink:'https://drive.google.com/...'}}, function(res){
+    if(res.error){alert(res.error);return;}
+    btn.textContent='Completed';btn.className='btn btn-green btn-sm';
+    document.getElementById('dms-'+tokenId).style.opacity='0.5';
+  });
+}
+
+// ── MASTER DATA ────────────────────────────────────────────────
+function loadMaster(){
+  var el=document.getElementById('master-content');
+  apiGet({action:'getVendors'}, function(vendors){
+    apiGet({action:'getPartners'}, function(partners){
+      var vRows=(vendors||[]).map(function(v){
+        return '<tr><td style="font-family:monospace;font-size:11px">'+v.code+'</td><td>'+v.name+'</td><td>'+v.pocName+'</td><td>'+v.pocMobile+'</td><td>'+v.city+'</td><td><span class="badge '+(v.defaultTransit==='Surface'?'b-teal':'b-amber')+'">'+v.defaultTransit+'</span></td><td>'+v.preferredLP+'</td><td><span class="badge b-teal">'+v.active+'</span></td></tr>';
+      }).join('');
+      var pRows=(partners||[]).map(function(p){
+        return '<tr><td style="font-family:monospace;font-size:11px">'+p.code+'</td><td>'+p.name+'</td><td>'+p.contactName+'</td><td>'+p.mobile+'</td><td>'+p.email+'</td><td><span class="badge b-teal">'+p.active+'</span></td></tr>';
+      }).join('');
+      el.innerHTML=
+        '<div class="card"><div class="card-title">Manufacturing vendors <button class="btn btn-sm" onclick="showAddVendor()">+ Add vendor</button></div>' +
+        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>POC name</th><th>POC mobile</th><th>City</th><th>Default transit</th><th>Preferred LP</th><th>Status</th></tr></thead><tbody>'+vRows+'</tbody></table></div></div>' +
+        '<div class="card"><div class="card-title">Logistics partners <button class="btn btn-sm" onclick="showAddPartner()">+ Add partner</button></div>' +
+        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Contact</th><th>Mobile</th><th>Email</th><th>Status</th></tr></thead><tbody>'+pRows+'</tbody></table></div></div>' +
+        '<div class="card"><div class="card-title">Drop locations</div>' +
+        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Dock range</th><th>Status</th></tr></thead><tbody>' +
+        '<tr><td style="font-family:monospace;font-size:11px">DL-001</td><td>Aramex Warehouse</td><td>Docks 13-19</td><td><span class="badge b-teal">Active</span></td></tr>' +
+        '<tr><td style="font-family:monospace;font-size:11px">DL-002</td><td>Servicelink Warehouse</td><td>Docks 13-19</td><td><span class="badge b-teal">Active</span></td></tr>' +
+        '</tbody></table></div></div>';
+    });
+  });
+}
+function showAddVendor(){
+  var code=prompt('Vendor name?');
+  if(!code)return;
+  apiPost({action:'addVendor',data:{name:code,pocName:'',pocMobile:'',pocEmail:'',city:'',defaultTransit:'Surface',preferredLP:''}},function(r){if(r.success){loadMaster();}});
+}
+function showAddPartner(){
+  var name=prompt('Logistics partner name?');
+  if(!name)return;
+  apiPost({action:'addPartner',data:{name:name,contactName:'',mobile:'',email:''}},function(r){if(r.success){loadMaster();}});
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+// API connected
+loadDashboard();
+</script>
+</body>
+</html>
