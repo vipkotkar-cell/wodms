@@ -1337,6 +1337,8 @@ function doLogin() {
   document.getElementById("login-err").style.display = "none";
   apiGet({ action:"login", email:email }, function(res) {
     btn.textContent = "Sign In"; btn.disabled = false;
+    // Show raw response for debugging
+    showLoginErr("DEBUG: " + JSON.stringify(res).substring(0,200));
     if (res.error) { showLoginErr("Connection error: " + res.error); return; }
     if (!res.ok) { showLoginErr(res.msg || "Login failed."); return; }
     currentUser = { name:res.name, email:res.email, role:res.role, userId:res.id, dept:res.dept||"" };
