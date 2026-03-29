@@ -791,27 +791,29 @@ function loadScreen(id) {
 // ── API ──────────────────────────────────────────────────────────
 function apiGet(p, cb) {
   var url = API+"?"+Object.keys(p).map(function(k){return k+"="+encodeURIComponent(p[k]);}).join("&");
-  // Use script tag injection to bypass CORS (JSONP-style)
-  var cbName = "cb_" + Math.random().toString(36).substr(2,8);
-  var script = document.createElement("script");
-  var timeout = setTimeout(function(){
-    delete window[cbName];
-    if(script.parentNode) script.parentNode.removeChild(script);
-    cb({error:"Request timed out. Check network."});
-  }, 15000);
-  window[cbName] = function(data){
-    clearTimeout(timeout);
-    delete window[cbName];
-    if(script.parentNode) script.parentNode.removeChild(script);
-    cb(data);
-  };
-  script.onerror = function(){
-    clearTimeout(timeout);
-    delete window[cbName];
-    cb({error:"Script load failed. Check Apps Script deployment."});
-  };
-  script.src = url + "&callback=" + cbName;
-  document.head.appendChild(script);
+  var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  var timer = setTimeout(function(){
+    if(controller) controller.abort();
+    cb({error:"Timeout — Apps Script not responding. Check deployment settings."});
+  }, 12000);
+  fetch(url, {
+    redirect: "follow",
+    signal: controller ? controller.signal : undefined
+  })
+  .then(function(r){ return r.text(); })
+  .then(function(t){
+    clearTimeout(timer);
+    // Handle JSONP wrapper if present
+    t = t.trim();
+    if(t.startsWith("cb_")) t = t.replace(/^cb_\w+\(/, "").replace(/\)$/, "");
+    try { cb(JSON.parse(t)); }
+    catch(e){ cb({error:"Parse error: " + t.substring(0,120)}); }
+  })
+  .catch(function(e){
+    clearTimeout(timer);
+    if(e.name === "AbortError") return;
+    cb({error: e.message || e.toString()});
+  });
 }
 function apiPost(d, cb) {
   fetch(API,{method:"POST",redirect:"follow",body:JSON.stringify(d),headers:{"Content-Type":"application/json"}})
@@ -835,7 +837,17 @@ function loadDash() {
   document.getElementById("welcome-loading").style.display="block";
   document.getElementById("welcome-content").style.display="none";
   apiGet({action:"dash"}, function(d) {
-    if (d.error) { document.getElementById("welcome-loading").innerHTML='<div style="color:var(--muted);padding:20px">Could not connect to backend.</div>'; return; }
+    if (d.error) { document.getElementById("welcome-loading").innerHTML=
+      '<div style="padding:20px;text-align:center">'+
+      '<div style="font-size:14px;font-weight:600;color:#dc2626;margin-bottom:8px">Cannot connect to backend</div>'+
+      '<div style="font-size:12px;color:#6b7280;margin-bottom:16px">'+( d.error||"Unknown error")+'</div>'+
+      '<div style="font-size:11px;color:#9ca3af;background:#f9fafb;padding:12px;border-radius:6px;text-align:left">'+
+      '<b>To fix:</b><br>1. Open Apps Script → Deploy → Manage deployments<br>'+
+      '2. Click pencil ✏ → Set "Who has access" to <b>Anyone</b><br>'+
+      '3. Select <b>New version</b> → Deploy<br>'+
+      '4. Test: <a href="'+API+'?action=ping" target="_blank" style="color:#2563eb">Click to test backend</a>'+
+      '</div></div>';
+    return; }
     document.getElementById("welcome-loading").style.display="none";
     document.getElementById("welcome-content").style.display="block";
     document.getElementById("sync-time").textContent = d.lastUpdated;
