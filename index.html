@@ -791,11 +791,22 @@ function loadScreen(id) {
 // ── API ──────────────────────────────────────────────────────────
 function apiGet(p, cb) {
   var url = API+"?"+Object.keys(p).map(function(k){return k+"="+encodeURIComponent(p[k]);}).join("&");
-  fetch(url).then(function(r){return r.json();}).then(cb).catch(function(e){cb({error:e.toString()});});
+  fetch(url, {redirect:"follow"})
+    .then(function(r){ return r.text(); })
+    .then(function(t){
+      try { cb(JSON.parse(t)); }
+      catch(e){ cb({error:"Parse error: "+t.substring(0,100)}); }
+    })
+    .catch(function(e){ cb({error:e.toString()}); });
 }
 function apiPost(d, cb) {
-  fetch(API,{method:"POST",body:JSON.stringify(d),headers:{"Content-Type":"application/json"}})
-    .then(function(r){return r.json();}).then(cb).catch(function(e){cb({error:e.toString()});});
+  fetch(API,{method:"POST",redirect:"follow",body:JSON.stringify(d),headers:{"Content-Type":"application/json"}})
+    .then(function(r){return r.text();})
+    .then(function(t){
+      try { cb(JSON.parse(t)); }
+      catch(e){ cb({error:"Parse error: "+t.substring(0,100)}); }
+    })
+    .then(cb).catch(function(e){cb({error:e.toString()});});
 }
 
 function sBadge(s) {
@@ -1326,6 +1337,7 @@ function doLogin() {
   document.getElementById("login-err").style.display = "none";
   apiGet({ action:"loginCheck", email:email }, function(res) {
     btn.textContent = "Sign In"; btn.disabled = false;
+    if (res.error) { showLoginErr("Connection error: " + res.error); return; }
     if (!res.success) { showLoginErr(res.message || "Login failed."); return; }
     currentUser = { name:res.name, email:res.email, role:res.role, userId:res.userId, dept:res.dept||"" };
     localStorage.setItem("wodms_session", JSON.stringify(currentUser));
