@@ -2,963 +2,1255 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1200,initial-scale=1">
+<meta name="viewport" content="width=1280,initial-scale=1">
 <title>Inbound Ops Central — Mosaic Wellness</title>
 <style>
-:root{
-  --blue:#1F3C88;--teal:#0B7A75;--amber:#D97706;--red:#DC2626;--green:#15803D;--purple:#534AB7;
-  --lblue:#EFF6FF;--lteal:#F0FDF4;--lamber:#FFFBEB;--lred:#FEF2F2;--lgreen:#F0FDF4;--lpur:#EEEDFE;
-  --bg:#F8FAFC;--bg2:#F1F5F9;--card:#fff;--border:#E2E8F0;--text:#0F172A;--muted:#64748B;--faint:#94A3B8;
-  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);line-height:1.5;min-width:1100px}
-.layout{display:flex;height:100vh;overflow:hidden;min-width:1100px}
+:root{
+  --blue:#2563EB;--teal:#0D9488;--amber:#D97706;--red:#DC2626;--green:#16A34A;--purple:#7C3AED;--orange:#EA580C;
+  --nav-bg:#0F1C2D;--nav-w:220px;--hdr-h:46px;
+  --bg:#F0F2F5;--card:#FFFFFF;--border:#E4E7EC;--text:#111827;--muted:#6B7280;--faint:#9CA3AF;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg)}
 
-/* SIDEBAR */
-.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
-.sidebar-header{padding:16px 14px 12px;border-bottom:1px solid var(--border)}
-.sidebar-logo{font-size:15px;font-weight:600;color:var(--blue);letter-spacing:-.3px}
-.sidebar-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.nav-group{padding:10px 0 4px}
-.nav-group-label{font-size:10px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;padding:0 14px 4px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12.5px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .1s;user-select:none}
-.nav-item:hover{color:var(--text);background:var(--bg)}
-.nav-item.active{color:var(--blue);font-weight:500;border-left-color:var(--blue);background:var(--lblue)}
-.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+/* SHELL */
+.shell{display:flex;flex-direction:column;height:100vh}
+
+/* HEADER */
+.hdr{height:var(--hdr-h);background:var(--nav-bg);display:flex;align-items:center;padding:0 16px 0 0;flex-shrink:0;border-bottom:1px solid #1e3352}
+.hdr-brand{width:var(--nav-w);display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0}
+.hdr-brand img{height:28px;width:auto}
+.hdr-sep{width:1px;height:24px;background:#1e3352;margin-right:14px}
+.hdr-title{font-size:13px;font-weight:600;color:#e2e8f0}
+.hdr-tag{font-size:10px;color:#64748b;font-weight:400;margin-left:6px}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.hdr-user{display:flex;align-items:center;gap:8px;cursor:pointer}
+.hdr-avatar{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-uname{font-size:12px;color:#e2e8f0;font-weight:500}
+.hdr-urole{font-size:10px;color:#64748b}
+.hdr-sync{font-size:11px;color:#64748b;display:flex;align-items:center;gap:5px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite;display:inline-block}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.btn-refresh{padding:4px 11px;font-size:11px;font-weight:500;background:#1e3352;color:#94a3b8;border:1px solid #2d4a6e;border-radius:5px;cursor:pointer;transition:all .1s}
+.btn-refresh:hover{background:#2d4a6e;color:#e2e8f0}
+
+/* BODY */
+.body-row{display:flex;flex:1;overflow:hidden}
+
+/* NAV */
+.nav{width:var(--nav-w);background:var(--nav-bg);flex-shrink:0;overflow-y:auto;padding:8px 0 0;border-right:1px solid #1e3352;display:flex;flex-direction:column}
+.nav::-webkit-scrollbar{width:3px}.nav::-webkit-scrollbar-thumb{background:#2d4a6e}
+.nav-body{flex:1;overflow-y:auto}
+.nav-sec{font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.1em;padding:10px 14px 4px}
+.nav-sec:first-child{padding-top:6px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;color:#94a3b8;cursor:pointer;border-left:2px solid transparent;transition:all .1s;user-select:none;white-space:nowrap}
+.ni:hover{color:#e2e8f0;background:rgba(255,255,255,.04)}
+.ni.active{color:#fff;background:rgba(37,99,235,.18);border-left-color:#2563EB;font-weight:500}
+.ni.hidden{display:none}
+.ni svg{width:13px;height:13px;flex-shrink:0;opacity:.7}
+.ni.active svg{opacity:1}
+.nav-div{height:1px;background:#1e3352;margin:6px 14px}
+
+/* ROLE SWITCHER */
+.role-panel{padding:10px 14px;border-top:1px solid #1e3352;background:#0a1420;flex-shrink:0}
+.role-label{font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.role-display{font-size:12px;color:#e2e8f0;font-weight:500;padding:5px 8px;background:#1e3352;border-radius:5px;display:flex;align-items:center;gap:6px}
+.role-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+select.role-sel{width:100%;background:#1e3352;color:#e2e8f0;border:1px solid #2d4a6e;border-radius:5px;padding:5px 8px;font-size:12px;font-family:var(--font);cursor:pointer;outline:none}
+select.role-sel:focus{border-color:var(--blue)}
 
 /* MAIN */
-.main{flex:1;overflow-y:auto;background:var(--bg)}
-.topbar{background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
-.topbar-title{font-size:17px;font-weight:600;color:var(--text)}
-.topbar-sub{font-size:12px;color:var(--muted);margin-left:4px}
-.sync-badge{margin-left:auto;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.dot-live{width:7px;height:7px;border-radius:50%;background:#15803D;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.content{padding:20px 28px;max-width:100%}
-.screen{display:none}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0}
+.main::-webkit-scrollbar{width:5px}.main::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+.screen{display:none;padding:14px 16px;flex:1}
 .screen.active{display:block}
 
+/* WELCOME SCREEN */
+.welcome{display:none;padding:20px 24px;flex:1}
+.welcome.active{display:block}
+.welcome-top{margin-bottom:20px}
+.welcome-name{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.welcome-role{font-size:13px;color:var(--muted)}
+.welcome-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.wc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;border-left:4px solid transparent;cursor:pointer;transition:all .12s}
+.wc:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.wc-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.wc-val{font-size:32px;font-weight:800;line-height:1;margin-bottom:4px}
+.wc-sub{font-size:11px;color:var(--faint)}
+.wc-action{font-size:11px;font-weight:600;margin-top:8px;color:var(--blue)}
+.welcome-banner{background:linear-gradient(135deg,#0F1C2D,#1e3352);border-radius:10px;padding:18px 20px;color:#e2e8f0}
+.wb-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.wb-sub{font-size:12px;color:#94a3b8}
+
+/* PAGE HEADER */
+.pg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pg-title{font-size:15px;font-weight:700;color:var(--text)}
+.pg-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.pg-actions{display:flex;gap:6px;align-items:center}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;border-left:3px solid transparent;position:relative;overflow:hidden}
+.kpi-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.kpi-val{font-size:26px;font-weight:800;line-height:1;margin-bottom:2px}
+.kpi-sub{font-size:10px;color:var(--faint)}
+
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px}
-.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:#fafbfc}
+.card-hdr-title{font-size:12px;font-weight:600;color:var(--text)}
+.card-body{padding:10px 12px}
 
-/* KPIs */
-.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
-.kpi{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;border-top:3px solid transparent}
-.kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px}
-.kpi-val{font-size:28px;font-weight:700}
-.kpi-sub{font-size:10px;color:var(--faint);margin-top:2px}
+/* STEP BUCKETS */
+.buckets{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.bucket{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 6px;cursor:pointer;transition:all .12s;border-top:3px solid transparent;text-align:center}
+.bucket:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.bucket-n{font-size:22px;font-weight:800;line-height:1.1}
+.bucket-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;line-height:1.2}
+.bucket-act{font-size:9px;font-weight:600;margin-top:3px}
 
-/* BUCKETS */
-.bucket-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
-.bucket{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .12s;border-top:3px solid transparent}
-.bucket:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);transform:translateY(-1px)}
-.bucket-num{font-size:32px;font-weight:700;margin-bottom:4px}
-.bucket-label{font-size:12px;color:var(--muted);margin-bottom:6px}
-.bucket-action{font-size:11px;font-weight:500}
+/* DOCK */
+.dock-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.dock{border-radius:6px;padding:7px 4px;text-align:center;font-size:10px;font-weight:700;border:1px solid}
+.dock span{display:block;font-size:9px;font-weight:400;margin-top:1px;opacity:.8}
+.d-free{background:#f0fdf4;color:#16a34a;border-color:#bbf7d0}
+.d-busy{background:#fef2f2;color:#dc2626;border-color:#fecaca}
+.d-buf{background:#fffbeb;color:#d97706;border-color:#fde68a}
 
-/* CAPACITY BAR */
-.cap-bar{background:var(--bg2);border-radius:20px;height:8px;overflow:hidden;margin:6px 0 3px}
+/* CAPACITY */
+.cap-wrap{display:flex;align-items:center;gap:10px}
+.cap-bar{flex:1;background:#e5e7eb;border-radius:20px;height:7px;overflow:hidden}
 .cap-fill{height:100%;border-radius:20px;background:var(--blue);transition:width .4s}
-
-/* DOCKS */
-.dock-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:8px}
-.dock{border-radius:8px;padding:10px 6px;text-align:center;font-size:11px;font-weight:600;border:1px solid}
-.dock-free{background:var(--lteal);color:var(--green);border-color:#BBF7D0}
-.dock-busy{background:var(--lred);color:var(--red);border-color:#FECACA}
-.dock-buf{background:var(--lamber);color:var(--amber);border-color:#FDE68A}
-.dock span{display:block;font-size:10px;font-weight:400;margin-top:2px}
+.cap-txt{font-size:11px;color:var(--muted);white-space:nowrap}
 
 /* TABLE */
-.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:var(--muted);background:var(--bg2);border-bottom:1px solid var(--border)}
-td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:7px 10px;font-size:10px;font-weight:700;color:var(--muted);background:#f9fafb;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--bg)}
+tr:hover td{background:#f9fafb}
+.mono{font-family:monospace;font-size:11px}
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px}
-.b-blue{background:var(--lblue);color:var(--blue)}
-.b-teal{background:var(--lteal);color:var(--teal)}
-.b-amber{background:var(--lamber);color:var(--amber)}
-.b-red{background:var(--lred);color:var(--red)}
-.b-green{background:var(--lgreen);color:var(--green)}
-.b-gray{background:var(--bg2);color:var(--muted)}
-.b-purple{background:var(--lpur);color:var(--purple)}
+/* BADGE */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.b-blue{background:#eff6ff;color:#1d4ed8}.b-teal{background:#f0fdfa;color:#0f766e}
+.b-amber{background:#fffbeb;color:#b45309}.b-red{background:#fef2f2;color:#b91c1c}
+.b-green{background:#f0fdf4;color:#15803d}.b-gray{background:#f3f4f6;color:#4b5563}
+.b-purple{background:#f5f3ff;color:#6d28d9}.b-orange{background:#fff7ed;color:#c2410c}
 
 /* FORMS */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
-.form-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px}
-.fgroup{margin-top:14px}
-label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px}
-input,select,textarea{width:100%;border:1px solid var(--border);border-radius:7px;padding:8px 11px;font-size:13px;color:var(--text);background:#fff;font-family:var(--font);outline:none;transition:border-color .1s}
-input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,60,136,.08)}
-input[readonly]{background:var(--bg2);color:var(--muted)}
-textarea{resize:vertical;min-height:80px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.form-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+.fg{margin-bottom:10px}
+label{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 9px;font-size:12px;color:var(--text);background:#fff;font-family:var(--font);outline:none;transition:border-color .1s}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.1)}
+input[readonly]{background:#f9fafb;color:var(--muted)}
+textarea{resize:vertical;min-height:60px}
 
-/* RADIO GROUPS */
-.radio-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.radio-opt{display:flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--muted);transition:all .1s;user-select:none}
-.radio-opt:hover{border-color:var(--blue);color:var(--blue)}
-.radio-opt.sel{border-color:var(--blue);background:var(--lblue);color:var(--blue);font-weight:500}
-.radio-circle{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.radio-inner{width:6px;height:6px;border-radius:50%;background:currentColor;display:none}
-.radio-opt.sel .radio-inner{display:block}
+/* RADIO */
+.radio-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.ro{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;color:var(--muted);transition:all .1s;user-select:none}
+.ro:hover{border-color:var(--blue)}.ro.sel{border-color:var(--blue);background:#eff6ff;color:var(--blue);font-weight:600}
+.ro-dot{width:11px;height:11px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ro-inner{width:5px;height:5px;border-radius:50%;background:currentColor;display:none}
+.ro.sel .ro-inner{display:block}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:#fff;color:var(--text);font-family:var(--font);transition:all .1s;user-select:none}
-.btn:hover{background:var(--bg)}
-.btn:active{transform:scale(.98)}
-.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
-.btn-primary:hover{background:#0C447C;border-color:#0C447C}
-.btn-teal{background:var(--teal);color:#fff;border-color:var(--teal)}
-.btn-teal:hover{background:#085041}
-.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
-.btn-green:hover{background:#166534}
-.btn-sm{padding:5px 11px;font-size:12px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:#fff;color:var(--text);font-family:var(--font);transition:all .1s;user-select:none;white-space:nowrap}
+.btn:hover{background:#f9fafb}.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}.btn-primary:hover{background:#1d4ed8}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}.btn-green:hover{background:#166534}
+.btn-sm{padding:4px 10px;font-size:11px}
 
 /* ALERTS */
-.alert{border-radius:8px;padding:11px 14px;font-size:12.5px;margin-bottom:12px}
-.alert-warn{background:var(--lamber);border:1px solid #FDE68A;color:#92400E}
-.alert-info{background:var(--lblue);border:1px solid #BFDBFE;color:#1E3A8A}
-.alert-success{background:var(--lteal);border:1px solid #BBF7D0;color:#14532D}
-.alert-error{background:var(--lred);border:1px solid #FECACA;color:#7F1D1D}
+.alert{border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:10px}
+.al-warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.al-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+.al-ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+.al-err{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d}
 
-/* TOKEN CARDS */
-.token-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px}
-.token-id{font-family:monospace;font-size:10px;color:var(--faint);margin-bottom:3px}
-.token-title{font-size:13px;font-weight:500;margin-bottom:2px}
-.token-meta{font-size:11px;color:var(--muted)}
-.token-actions{flex-shrink:0;display:flex;gap:8px;align-items:center}
+/* TOKEN CARD */
+.tok{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+.tok-id{font-family:monospace;font-size:9px;color:var(--faint);margin-bottom:2px}
+.tok-title{font-size:12px;font-weight:600;margin-bottom:1px}
+.tok-meta{font-size:10px;color:var(--muted)}
+.tok-actions{margin-left:auto;display:flex;gap:6px;align-items:center;flex-shrink:0}
+
+/* TWO-COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+
+/* CALENDAR */
+.cal-wrap{padding:0}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border)}
+.cal-title{font-size:13px;font-weight:600}
+.cal-nav{display:flex;gap:6px}
+.cal-nav button{padding:3px 8px;font-size:12px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer}
+.cal-nav button:hover{background:var(--bg)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--border)}
+.cal-day-hdr{background:#f9fafb;text-align:center;padding:5px;font-size:10px;font-weight:700;color:var(--muted);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.cal-cell{min-height:70px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:4px;cursor:pointer;transition:background .1s;position:relative}
+.cal-cell:hover{background:#f9fafb}
+.cal-cell.today{background:#eff6ff}
+.cal-cell.other-month .cal-date{color:var(--faint)}
+.cal-date{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.cal-appt{font-size:9px;font-weight:600;padding:2px 4px;border-radius:3px;margin-bottom:1px;line-height:1.3;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.cal-appt.confirmed{background:#dcfce7;color:#166534}
+.cal-appt.pending{background:#fef9c3;color:#854d0e}
+.cal-appt.transit{background:#ede9fe;color:#5b21b6}
+.cal-legend{display:flex;gap:12px;padding:8px 12px;border-top:1px solid var(--border);font-size:10px}
+.cal-leg-item{display:flex;align-items:center;gap:4px}
+.cal-leg-dot{width:8px;height:8px;border-radius:2px}
+
+/* APPT DETAIL */
+.appt-list{padding:0}
+.appt-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px}
+.appt-item:last-child{border-bottom:none}
+.appt-time{font-size:11px;font-weight:700;color:var(--blue);min-width:80px;font-family:monospace}
+.appt-info{flex:1}
+.appt-token{font-size:10px;color:var(--faint);font-family:monospace}
+.appt-vendor{font-size:12px;font-weight:600}
+.appt-meta{font-size:10px;color:var(--muted)}
+.appt-badge{flex-shrink:0}
 
 /* SKU TABLE */
-.sku-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.sku-table th{background:var(--bg2);padding:7px 10px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border)}
-.sku-table td{padding:7px 10px;border-bottom:1px solid var(--border)}
-.sku-table tr:last-child td{border-bottom:none}
-.sku-table td input{width:90px;padding:5px 8px;font-size:12px}
+.sku-tbl{width:100%;border-collapse:collapse;font-size:11px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.sku-tbl th{background:#f9fafb;padding:5px 8px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border)}
+.sku-tbl td{padding:5px 8px;border-bottom:1px solid var(--border)}
+.sku-tbl tr:last-child td{border-bottom:none}
+.sku-tbl td input{width:80px;padding:3px 6px;font-size:11px}
 
-/* SECTION DIVIDER */
-.sdiv{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;padding-bottom:8px;border-bottom:1px solid var(--border);margin:16px 0 12px}
-
-/* STEP INDICATOR */
-.step-bar{display:flex;margin-bottom:20px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
-.step-seg{flex:1;text-align:center;padding:9px 4px;font-size:11px;font-weight:500;border-right:1px solid var(--border);cursor:pointer;transition:all .1s;background:#fff;color:var(--muted)}
-.step-seg:last-child{border-right:none}
-.step-seg.done{background:var(--lteal);color:var(--green)}
-.step-seg.current{background:var(--lblue);color:var(--blue)}
-.step-seg:hover{background:var(--bg)}
-
-/* LOADING */
-.loading{text-align:center;padding:40px;color:var(--muted);font-size:13px}
-.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 12px}
+.sdiv{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;padding-bottom:6px;border-bottom:1px solid var(--border);margin:12px 0 8px}
+.loading{text-align:center;padding:30px;color:var(--muted)}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* RESPONSIVE - enforce desktop layout always */
-@media(max-width:1100px){
-  .kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .bucket-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
 </style>
 </head>
 <body>
+<div class="shell">
 
-<div class="layout">
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-brand">
+    <img src="data:image/png;base64,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" alt="Mosaic">
+    <div class="hdr-sep"></div>
+  </div>
+  <div class="hdr-title">Inbound Ops Central <span class="hdr-tag">Warehouse &amp; Vendor Scheduling</span></div>
+  <div class="hdr-right">
+    <div class="hdr-sync"><span class="live-dot"></span><span id="sync-time">Connecting...</span></div>
+    <button class="btn-refresh" onclick="refreshNow()">&#8635; Refresh</button>
+    <div class="hdr-user" onclick="showNameEdit()">
+      <div class="hdr-avatar" id="hdr-avatar">?</div>
+      <div>
+        <div class="hdr-uname" id="hdr-uname">Set your name</div>
+        <div class="hdr-urole" id="hdr-urole">—</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- SIDEBAR -->
-<nav class="sidebar">
-  <div class="sidebar-header" style="padding:14px 14px 12px">
-    <img src="data:image/png;base64,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" alt="Mosaic Wellness" style="width:100%;max-width:140px;height:auto;display:block;margin-bottom:10px;object-fit:contain">
-    <div class="sidebar-logo" style="font-size:15px;font-weight:700;line-height:1.25">Inbound Ops Central</div>
-    <div class="sidebar-sub" style="font-size:12px;margin-top:5px;line-height:1.4">Vendor Pickup &amp; Warehouse<br>Appointment Scheduling</div>
+<!-- NAME MODAL -->
+<div id="name-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:24px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-size:15px;font-weight:700;margin-bottom:4px">Welcome to Inbound Ops Central</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Please enter your name to get started</div>
+    <div class="fg"><label>Your Name</label><input id="name-input" placeholder="e.g. Vipul Kotkar" onkeydown="if(event.key==='Enter')saveName()"></div>
+    <div class="fg"><label>Your Role</label>
+      <select id="role-input-modal">
+        <option value="admin">Admin</option>
+        <option value="supply_planning">Supply Planning</option>
+        <option value="logistics_team">Logistics Team</option>
+        <option value="logistics_partner">Logistics Partner (Transporter)</option>
+        <option value="security">Security</option>
+        <option value="warehouse">Warehouse Team</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="saveName()">Get Started</button>
   </div>
+</div>
+
+<!-- BODY -->
+<div class="body-row">
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-body">
+    <div class="nav-sec">Dashboard</div>
+    <div class="ni active" data-s="dashboard" data-roles="all">
+      <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Control Tower
+    </div>
+    <div class="ni" data-s="register" data-roles="admin,supply_planning,logistics_team,warehouse">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="11" y2="9"/></svg>
+      Shipment Register
+    </div>
+    <div class="nav-div"></div>
+    <div class="nav-sec">Workflow</div>
+    <div class="ni" data-s="step1" data-roles="admin,supply_planning">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+      Create Shipment
+    </div>
+    <div class="ni" data-s="step2" data-roles="admin,logistics_team">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM2 14c0-3 2.7-5 6-5s6 2 6 5"/><path d="M12 8l2 2-2 2"/></svg>
+      Assign Transport Partner
+    </div>
+    <div class="ni" data-s="step3" data-roles="admin,logistics_partner">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="7" width="10" height="7" rx="1"/><path d="M11 10h2l2-3V7h-4"/><circle cx="3.5" cy="14" r="1.5"/><circle cx="9.5" cy="14" r="1.5"/></svg>
+      Pickup &amp; Transit
+    </div>
+    <div class="ni" data-s="step4" data-roles="admin,security">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l5 2v5c0 3-2 5-5 6C6 13 3 11 3 8V3l5-2z"/><path d="M5.5 8l2 2 3-3"/></svg>
+      Gate In (Warehouse Entry)
+    </div>
+    <div class="ni" data-s="step5" data-roles="admin,warehouse">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="10" rx="1"/><path d="M1 7h14M5 4V2M11 4V2"/><path d="M6 10.5l1.5 1.5 3-3"/></svg>
+      Unload &amp; Verify
+    </div>
+    <div class="ni" data-s="step6" data-roles="admin,security">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 5.5"/></svg>
+      Gate Out (Vehicle Exit)
+    </div>
+    <div class="ni" data-s="step7" data-roles="admin,warehouse">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H2V1z"/><path d="M9 1v4h4"/><line x1="5" y1="9" x2="11" y2="9"/><line x1="5" y1="12" x2="8" y2="12"/></svg>
+      Upload Documents &amp; Close
+    </div>
+    <div class="nav-div"></div>
+    <div class="nav-sec">Master Data</div>
+    <div class="ni" data-s="master" data-roles="admin,supply_planning">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="5" rx="6" ry="2.5"/><path d="M2 5v3c0 1.4 2.7 2.5 6 2.5S14 9.4 14 8V5"/><path d="M2 8v3c0 1.4 2.7 2.5 6 2.5S14 12.4 14 11V8"/></svg>
+      Vendors &amp; Partners
+    </div>
   </div>
-  <div class="nav-group">
-    <div class="nav-group-label">Dashboard</div>
-    <div class="nav-item active" data-screen="dashboard">
-      <div class="nav-dot" style="background:var(--blue)"></div>Control tower
-    </div>
-    <div class="nav-item" data-screen="register">
-      <div class="nav-dot" style="background:var(--muted)"></div>Shipment register
-    </div>
-  </div>
-  <div class="nav-group">
-    <div class="nav-group-label">Workflow</div>
-    <div class="nav-item" data-screen="step1">
-      <div class="nav-dot" style="background:var(--blue)"></div>Step 1 — Token creation
-    </div>
-    <div class="nav-item" data-screen="step2">
-      <div class="nav-dot" style="background:var(--teal)"></div>Step 2 — Assign partner
-    </div>
-    <div class="nav-item" data-screen="step3">
-      <div class="nav-dot" style="background:var(--purple)"></div>Step 3 — In-transit
-    </div>
-    <div class="nav-item" data-screen="step4">
-      <div class="nav-dot" style="background:var(--amber)"></div>Step 4 — Security inward
-    </div>
-    <div class="nav-item" data-screen="step5">
-      <div class="nav-dot" style="background:var(--muted)"></div>Step 5 — Security outward
-    </div>
-    <div class="nav-item" data-screen="step6">
-      <div class="nav-dot" style="background:var(--green)"></div>Step 6 — DMS upload
-    </div>
-  </div>
-  <div class="nav-group">
-    <div class="nav-group-label">Master data</div>
-    <div class="nav-item" data-screen="master">
-      <div class="nav-dot" style="background:var(--muted)"></div>Vendors &amp; partners
-    </div>
+
+  <!-- ROLE PANEL -->
+  <div class="role-panel">
+    <div class="role-label">Current Role</div>
+    <div id="role-display-panel"></div>
   </div>
 </nav>
 
 <!-- MAIN -->
 <div class="main">
-<div class="topbar">
-  <div style="display:flex;align-items:center;gap:12px">
-    <img src="data:image/png;base64,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" alt="Mosaic Wellness" style="height:28px;width:auto;object-fit:contain">
-    <div>
-      <span class="topbar-title" id="page-title">Control tower</span>
-      <span class="topbar-sub" id="page-sub">All internal teams — live status</span>
-    </div>
-  </div>
-  <div class="sync-badge">
-    <div class="dot-live"></div>
-    <span id="last-sync">Connecting...</span>
-    <button class="btn btn-sm" onclick="refreshCurrentScreen()">Refresh</button>
-  </div>
-</div>
-<div class="content">
 
-<!-- DASHBOARD -->
-<div class="screen active" id="screen-dashboard">
-  <div class="loading" id="dash-loading"><div class="spinner"></div>Loading dashboard...</div>
-  <div id="dash-content" style="display:none">
+<!-- WELCOME -->
+<div class="welcome" id="sc-dashboard">
+  <div id="welcome-loading" class="loading"><div class="spinner"></div>Loading dashboard...</div>
+  <div id="welcome-content" style="display:none">
+    <div class="welcome-top">
+      <div class="welcome-name" id="welcome-name">Welcome back</div>
+      <div class="welcome-role" id="welcome-role-line"></div>
+    </div>
+    <!-- KPIs -->
     <div class="kpi-row" id="kpi-row"></div>
-    <div class="card" style="padding:14px 16px;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:12px;font-weight:600">Daily box capacity</div>
-        <span id="cap-text" style="font-size:12px;color:var(--muted)"></span>
+    <!-- Capacity -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-hdr">
+        <div class="card-hdr-title">Daily Box Capacity</div>
+        <span id="cap-pct" style="font-size:11px;color:var(--muted)"></span>
       </div>
-      <div class="cap-bar"><div class="cap-fill" id="cap-fill" style="width:0%"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-top:2px"><span>0</span><span>1,750</span><span>3,500</span></div>
+      <div class="card-body" style="padding:8px 12px">
+        <div class="cap-wrap">
+          <div class="cap-bar"><div class="cap-fill" id="cap-fill" style="width:0%"></div></div>
+          <div class="cap-txt"><span id="cap-used">0</span> / 3,500 boxes</div>
+        </div>
+      </div>
     </div>
-    <div class="bucket-grid" id="bucket-grid"></div>
-    <div class="card">
-      <div class="card-title">Dock status — Docks 13-19</div>
-      <div class="dock-grid" id="dock-grid"></div>
-    </div>
-    <div class="card" id="approval-card" style="display:none">
-      <div class="card-title" style="color:var(--amber)">Transit approvals pending</div>
-      <div id="approval-list"></div>
+    <!-- Action cards for role -->
+    <div id="role-action-cards" class="welcome-cards"></div>
+    <!-- Step buckets -->
+    <div class="buckets" id="bucket-row"></div>
+    <!-- Bottom: docks + recent -->
+    <div class="two-col">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><div class="card-hdr-title">Dock Status (13–19)</div></div>
+        <div class="card-body"><div class="dock-row" id="dock-row"></div></div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><div class="card-hdr-title">Recent Shipments</div><span class="badge b-gray" id="recent-count">—</span></div>
+        <div class="tbl-wrap" id="recent-tbl"><div class="loading" style="padding:16px"><div class="spinner"></div></div></div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- REGISTER -->
-<div class="screen" id="screen-register">
-  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <select id="filter-step" style="width:140px" onchange="loadRegister()">
-      <option value="">All steps</option>
-      <option value="1">Step 1</option><option value="2">Step 2</option>
-      <option value="3">Step 3</option><option value="4">Step 4</option>
-      <option value="5">Step 5</option><option value="6">Step 6</option>
-    </select>
-    <button class="btn btn-sm" onclick="exportCSV()">Export CSV</button>
-    <span style="font-size:11px;color:var(--muted);align-self:center;margin-left:auto">Synced to Google Sheets in real time</span>
+<div class="screen" id="sc-register">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Shipment Register</div><div class="pg-sub">All shipments — live sync</div></div>
+    <div class="pg-actions">
+      <select id="reg-filter" style="font-size:11px;padding:4px 8px;width:auto" onchange="loadReg()">
+        <option value="">All Steps</option>
+        <option value="1">Step 1 — Create Shipment</option><option value="2">Step 2 — Assign Partner</option>
+        <option value="3">Step 3 — Pickup &amp; Transit</option><option value="4">Step 4 — Gate In</option>
+        <option value="5">Step 5 — Unload &amp; Verify</option><option value="6">Step 6 — Gate Out</option>
+        <option value="7">Step 7 — Uploaded &amp; Closed</option>
+      </select>
+      <button class="btn btn-sm" onclick="exportCSV()">Export CSV</button>
+    </div>
   </div>
-  <div class="loading" id="reg-loading"><div class="spinner"></div>Loading shipments...</div>
-  <div class="tbl-wrap" id="reg-table" style="display:none">
-    <table>
-      <thead><tr>
-        <th>Token ID</th><th>PO #</th><th>Invoice #</th><th>Manufacturer</th>
-        <th>Vehicle #</th><th>LR #</th><th>Pickup date</th><th>Boxes</th><th>Drop</th><th>Status</th>
-      </tr></thead>
-      <tbody id="reg-body"></tbody>
-    </table>
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:0">
+    <div class="tbl-wrap" id="reg-tbl"><div class="loading" style="padding:30px"><div class="spinner"></div>Loading...</div></div>
   </div>
 </div>
 
 <!-- STEP 1 -->
-<div class="screen" id="screen-step1">
-  <div id="s1-alert" class="alert alert-success" style="display:none"></div>
-  <div class="card">
-    <div class="sdiv">Vendor &amp; product details</div>
-    <div class="form-grid">
-      <div class="fgroup" style="margin-top:0">
-        <label>Manufacturing vendor</label>
-        <select id="s1-vendor" onchange="onVendorChange()">
-          <option value="">Select vendor...</option>
-        </select>
-      </div>
-      <div class="fgroup" style="margin-top:0">
-        <label>Drop location</label>
-        <div class="radio-group" id="s1-drop">
-          <div class="radio-opt sel" data-val="Aramex" onclick="pickRadio(this,'s1-drop')"><div class="radio-circle"><div class="radio-inner"></div></div>Aramex</div>
-          <div class="radio-opt" data-val="Servicelink" onclick="pickRadio(this,'s1-drop')"><div class="radio-circle"><div class="radio-inner"></div></div>Servicelink</div>
-          <div class="radio-opt" data-val="Both" onclick="pickRadio(this,'s1-drop')"><div class="radio-circle"><div class="radio-inner"></div></div>Both</div>
+<div class="screen" id="sc-step1">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Step 1 — Create Shipment</div><div class="pg-sub">Pickup from Manufacturing Partner | Owner: Supply Planning</div></div>
+  </div>
+  <div id="s1-ok" class="al-ok alert" style="display:none"></div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-hdr-title">Vendor &amp; Product Details</div></div>
+        <div class="card-body">
+          <div class="fg"><label>Manufacturing Vendor</label><select id="s1-vendor" onchange="onVendor()"><option value="">Select vendor...</option></select></div>
+          <div class="form-grid">
+            <div class="fg"><label>POC Name</label><input id="s1-poc-name" placeholder="Auto-filled"></div>
+            <div class="fg"><label>POC Mobile</label><input id="s1-poc-mob" placeholder="Auto-filled"></div>
+          </div>
+          <div class="fg"><label>Drop Location</label>
+            <div class="radio-row" id="s1-drop">
+              <div class="ro sel" data-val="Aramex" onclick="pickR(this,'s1-drop')"><div class="ro-dot"><div class="ro-inner"></div></div>Aramex</div>
+              <div class="ro" data-val="Servicelink" onclick="pickR(this,'s1-drop')"><div class="ro-dot"><div class="ro-inner"></div></div>Servicelink</div>
+              <div class="ro" data-val="Both" onclick="pickR(this,'s1-drop')"><div class="ro-dot"><div class="ro-inner"></div></div>Both</div>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="fg"><label>Product Type</label>
+              <div class="radio-row" id="s1-ptype">
+                <div class="ro sel" data-val="FG" onclick="pickR(this,'s1-ptype');chkApproval()"><div class="ro-dot"><div class="ro-inner"></div></div>FG</div>
+                <div class="ro" data-val="RM" onclick="pickR(this,'s1-ptype');chkApproval()"><div class="ro-dot"><div class="ro-inner"></div></div>RM</div>
+                <div class="ro" data-val="PM" onclick="pickR(this,'s1-ptype');chkApproval()"><div class="ro-dot"><div class="ro-inner"></div></div>PM</div>
+                <div class="ro" data-val="NPD" onclick="pickR(this,'s1-ptype');chkApproval()"><div class="ro-dot"><div class="ro-inner"></div></div>NPD</div>
+              </div>
+            </div>
+            <div class="fg"><label>Transit Mode</label>
+              <div class="radio-row" id="s1-transit">
+                <div class="ro sel" data-val="Surface" onclick="pickR(this,'s1-transit');chkApproval()"><div class="ro-dot"><div class="ro-inner"></div></div>Surface</div>
+                <div class="ro" data-val="Air" onclick="pickR(this,'s1-transit');chkApproval()"><div class="ro-dot"><div class="ro-inner"></div></div>Air</div>
+                <div class="ro" data-val="Train" onclick="pickR(this,'s1-transit');chkApproval()"><div class="ro-dot"><div class="ro-inner"></div></div>Train</div>
+              </div>
+            </div>
+          </div>
+          <div id="s1-approval" class="al-warn alert" style="display:none;font-size:11px"></div>
         </div>
       </div>
-      <div class="fgroup">
-        <label>Vendor POC name</label>
-        <input id="s1-poc-name" placeholder="Auto-filled on vendor selection">
-      </div>
-      <div class="fgroup">
-        <label>Vendor POC mobile</label>
-        <input id="s1-poc-mobile" placeholder="Auto-filled on vendor selection">
-      </div>
-    </div>
-    <div class="form-grid" style="margin-top:4px">
-      <div class="fgroup">
-        <label>Type of product</label>
-        <div class="radio-group" id="s1-ptype">
-          <div class="radio-opt sel" data-val="FG" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>FG</div>
-          <div class="radio-opt" data-val="RM" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>RM</div>
-          <div class="radio-opt" data-val="PM" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>PM</div>
-          <div class="radio-opt" data-val="NPD" onclick="pickRadio(this,'s1-ptype');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>NPD</div>
-        </div>
-      </div>
-      <div class="fgroup">
-        <label>Transit mode</label>
-        <div class="radio-group" id="s1-transit">
-          <div class="radio-opt sel" data-val="Surface" onclick="pickRadio(this,'s1-transit');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>Surface</div>
-          <div class="radio-opt" data-val="Air" onclick="pickRadio(this,'s1-transit');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>Air</div>
-          <div class="radio-opt" data-val="Train" onclick="pickRadio(this,'s1-transit');checkApproval()"><div class="radio-circle"><div class="radio-inner"></div></div>Train</div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-hdr-title">Shipment Details</div></div>
+        <div class="card-body">
+          <div class="form-grid3">
+            <div class="fg"><label>Boxes</label><input type="number" id="s1-boxes" placeholder="0" oninput="suggestV()"></div>
+            <div class="fg"><label>Weight (kg)</label><input type="number" id="s1-wt" placeholder="0" oninput="suggestV()"></div>
+            <div class="fg"><label>Vehicle Suggested</label><input id="s1-veh" readonly placeholder="Auto"></div>
+          </div>
         </div>
       </div>
     </div>
-    <div id="s1-approval-banner" class="alert alert-warn" style="display:none;margin-top:12px">
-      Approval required — token will be sent to <strong id="s1-approver"></strong> for transit authorization before logistics assignment.
-    </div>
-    <div class="sdiv">Shipment details</div>
-    <div class="form-grid3">
-      <div class="fgroup" style="margin-top:0">
-        <label>Number of pickup boxes</label>
-        <input type="number" id="s1-boxes" placeholder="e.g. 200" oninput="suggestVehicle()">
+    <div>
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-hdr-title">PO &amp; SKU Details</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select id="s1-po" style="font-size:11px;padding:3px 7px;width:170px"></select>
+            <button class="btn btn-sm" onclick="loadPOs()">Sync Gmail</button>
+            <span id="s1-sync-time" style="font-size:10px;color:var(--faint)">—</span>
+          </div>
+        </div>
+        <div class="card-body" style="padding:8px 12px">
+          <div id="s1-po-err" class="al-err alert" style="display:none;font-size:11px">SKU qty exceeds PO qty. Request PO modification before creating token.</div>
+          <table class="sku-tbl">
+            <thead><tr><th>SKU Code</th><th>Description</th><th>PO Qty</th><th>Ship Qty</th><th>Variance</th></tr></thead>
+            <tbody id="s1-sku-body"><tr><td colspan="5" style="text-align:center;color:var(--faint);padding:12px">Select a PO to load SKUs</td></tr></tbody>
+          </table>
+          <button class="btn btn-sm" style="margin-top:8px" onclick="addSKURow()">+ Add Row</button>
+        </div>
       </div>
-      <div class="fgroup" style="margin-top:0">
-        <label>Weight (kg)</label>
-        <input type="number" id="s1-weight" placeholder="e.g. 1200" oninput="suggestVehicle()">
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-primary" onclick="doCreateToken()">Create Shipment Token</button>
+        <button class="btn btn-sm" onclick="clearS1()">Clear</button>
       </div>
-      <div class="fgroup" style="margin-top:0">
-        <label>Vehicle suggested</label>
-        <input id="s1-vehicle" readonly placeholder="Auto from boxes + weight">
-      </div>
-    </div>
-    <div class="sdiv">PO &amp; SKU details</div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-      <select id="s1-po" style="flex:1;max-width:260px">
-        <option value="">Select PO (from Gmail sync)...</option>
-      </select>
-      <button class="btn btn-sm" onclick="loadPOs()">Sync from Gmail</button>
-      <span id="po-sync-time" style="font-size:11px;color:var(--muted)">Loading...</span>
-    </div>
-    <div id="s1-po-warn" class="alert alert-error" style="display:none">
-      SKU quantity exceeds PO quantity. Please request a PO modification or create a new PO before submitting.
-    </div>
-    <table class="sku-table">
-      <thead><tr><th>SKU #</th><th>Description</th><th>PO qty</th><th>Ship qty</th><th>Variance</th></tr></thead>
-      <tbody id="s1-sku-body">
-        <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">Select a PO to load SKU lines, or add manually below</td></tr>
-      </tbody>
-    </table>
-    <button class="btn btn-sm" style="margin-top:8px" onclick="addSKURow()">+ Add SKU row</button>
-    <div style="margin-top:18px;display:flex;gap:10px">
-      <button class="btn btn-primary" onclick="submitCreateToken()">Create token</button>
-      <button class="btn" onclick="clearStep1()">Clear form</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 2 -->
-<div class="screen" id="screen-step2">
-  <div id="s2-content">
-    <div class="loading"><div class="spinner"></div>Loading tokens awaiting assignment...</div>
+<!-- STEP 2 — ASSIGN + CALENDAR -->
+<div class="screen" id="sc-step2">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Step 2 — Assign Transport Partner</div><div class="pg-sub">Owner: Logistics Team</div></div>
+    <div class="pg-actions">
+      <button class="btn btn-sm" id="s2-tab-assign" onclick="s2tab('assign')" style="background:var(--blue);color:#fff;border-color:var(--blue)">Pending Assignment</button>
+      <button class="btn btn-sm" id="s2-tab-cal" onclick="s2tab('cal')">Appointment Calendar</button>
+    </div>
+  </div>
+  <div id="s2-assign-panel">
+    <div id="s2-body"><div class="loading"><div class="spinner"></div>Loading tokens...</div></div>
+  </div>
+  <div id="s2-cal-panel" style="display:none">
+    <div class="two-col" style="margin-bottom:0">
+      <div class="card" style="margin-bottom:0">
+        <div id="s2-cal"></div>
+        <div class="cal-legend">
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#dcfce7"></div><span style="font-size:10px">Confirmed</span></div>
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#fef9c3"></div><span style="font-size:10px">Pending</span></div>
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#ede9fe"></div><span style="font-size:10px">In Transit</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><div class="card-hdr-title" id="s2-cal-date-title">Appointments</div></div>
+        <div class="appt-list" id="s2-appt-list">
+          <div style="padding:20px;text-align:center;color:var(--faint);font-size:12px">Click a date to view appointments</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- STEP 3 -->
-<div class="screen" id="screen-step3">
-  <div id="s3-content">
-    <div class="loading"><div class="spinner"></div>Loading assigned tokens...</div>
+<!-- STEP 3 — TRANSIT + CALENDAR -->
+<div class="screen" id="sc-step3">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Step 3 — Pickup &amp; Transit</div><div class="pg-sub">Owner: Logistics Partner (Transporter)</div></div>
+    <div class="pg-actions">
+      <button class="btn btn-sm" id="s3-tab-tokens" onclick="s3tab('tokens')" style="background:var(--blue);color:#fff;border-color:var(--blue)">My Pickups</button>
+      <button class="btn btn-sm" id="s3-tab-cal" onclick="s3tab('cal')">My Schedule (Calendar)</button>
+    </div>
+  </div>
+  <div id="s3-tokens-panel">
+    <div id="s3-body"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+  <div id="s3-cal-panel" style="display:none">
+    <div class="two-col" style="margin-bottom:0">
+      <div class="card" style="margin-bottom:0">
+        <div id="s3-cal"></div>
+        <div class="cal-legend">
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#dcfce7"></div><span style="font-size:10px">Delivery Scheduled</span></div>
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#ede9fe"></div><span style="font-size:10px">In Transit</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-hdr"><div class="card-hdr-title" id="s3-cal-date-title">Scheduled Deliveries</div></div>
+        <div class="appt-list" id="s3-appt-list">
+          <div style="padding:20px;text-align:center;color:var(--faint);font-size:12px">Click a date to view your deliveries</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- STEP 4 -->
-<div class="screen" id="screen-step4">
+<div class="screen" id="sc-step4">
+  <div class="pg-hdr"><div><div class="pg-title">Step 4 — Gate In (Warehouse Entry)</div><div class="pg-sub">Owner: Security Team</div></div></div>
   <div class="card">
-    <div class="sdiv">Look up by LR number</div>
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px">
-      <div style="flex:1;max-width:280px"><label>LR # (Lorry Receipt)</label><input id="s4-lr" placeholder="e.g. LR-MW-56789"></div>
-      <button class="btn btn-primary" onclick="doLookupLR()">Look up</button>
+    <div class="card-hdr"><div class="card-hdr-title">Scan LR Number for Gate Entry</div></div>
+    <div class="card-body">
+      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px">
+        <div style="flex:1;max-width:280px"><label>LR Number</label><input id="s4-lr" placeholder="e.g. LR-MW-56789" onkeydown="if(event.key==='Enter')doLookupLR()"></div>
+        <button class="btn btn-primary" onclick="doLookupLR()">Look Up &amp; Check In</button>
+      </div>
+      <div id="s4-result"></div>
     </div>
-    <div id="s4-result" style="display:none"></div>
   </div>
 </div>
 
 <!-- STEP 5 -->
-<div class="screen" id="screen-step5">
-  <div class="card">
-    <div class="sdiv">Vehicle exit clearance</div>
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px">
-      <div style="flex:1;max-width:280px"><label>Vehicle registration number</label><input id="s5-vehicle" placeholder="e.g. MH04AB1234"></div>
-      <button class="btn btn-primary" onclick="doCheckClearance()">Check clearance</button>
-    </div>
-    <div id="s5-result" style="display:none"></div>
-  </div>
+<div class="screen" id="sc-step5">
+  <div class="pg-hdr"><div><div class="pg-title">Step 5 — Unload &amp; Verify</div><div class="pg-sub">Owner: Warehouse Team</div></div></div>
+  <div id="s5-body"><div class="loading"><div class="spinner"></div>Loading shipments arrived today...</div></div>
 </div>
 
 <!-- STEP 6 -->
-<div class="screen" id="screen-step6">
-  <div id="s6-content">
-    <div class="loading"><div class="spinner"></div>Loading DMS pending items...</div>
+<div class="screen" id="sc-step6">
+  <div class="pg-hdr"><div><div class="pg-title">Step 6 — Gate Out (Vehicle Exit)</div><div class="pg-sub">Owner: Security Team</div></div></div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-hdr-title">Vehicle Exit Clearance</div></div>
+    <div class="card-body">
+      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px">
+        <div style="flex:1;max-width:280px"><label>Vehicle Registration Number</label><input id="s6-veh" placeholder="e.g. MH04AB1234" onkeydown="if(event.key==='Enter')doCheckClearance()"></div>
+        <button class="btn btn-primary" onclick="doCheckClearance()">Check &amp; Clear Exit</button>
+      </div>
+      <div id="s6-result"></div>
+    </div>
   </div>
 </div>
 
-<!-- MASTER DATA -->
-<div class="screen" id="screen-master">
-  <div id="master-content">
-    <div class="loading"><div class="spinner"></div>Loading master data...</div>
-  </div>
+<!-- STEP 7 -->
+<div class="screen" id="sc-step7">
+  <div class="pg-hdr"><div><div class="pg-title">Step 7 — Upload Documents &amp; Close</div><div class="pg-sub">Owner: Warehouse Team</div></div></div>
+  <div id="s7-body"><div class="loading"><div class="spinner"></div>Loading pending DMS uploads...</div></div>
 </div>
 
+<!-- MASTER -->
+<div class="screen" id="sc-master">
+  <div class="pg-hdr">
+    <div><div class="pg-title">Vendors &amp; Partners</div><div class="pg-sub">Master data management</div></div>
+    <div class="pg-actions"><button class="btn btn-sm" onclick="addVendorPrompt()">+ Vendor</button><button class="btn btn-sm" onclick="addPartnerPrompt()">+ Partner</button></div>
+  </div>
+  <div id="master-body"><div class="loading"><div class="spinner"></div>Loading...</div></div>
 </div>
-</div>
-</div>
+
+</div><!-- /main -->
+</div><!-- /body-row -->
+</div><!-- /shell -->
 
 <script>
-// ── CONFIG ── Replace with your deployed Apps Script URL
-var API_URL = "https://script.google.com/macros/s/AKfycbzzRymTV7OquVRttVrT01lPOb4s5gw40z-XqU7rReHdH9vvJkDlzGwsYmxMtVJHnEalpQ/exec";
+var API = "https://script.google.com/macros/s/AKfycbzzRymTV7OquVRttVrT01lPOb4s5gw40z-XqU7rReHdH9vvJkDlzGwsYmxMtVJHnEalpQ/exec";
 
-// ── NAVIGATION ──────────────────────────────────────────────
-var PAGE_META = {
-  dashboard: ["Control tower","Inbound Ops Central — Vendor Pickup & Warehouse Scheduling"],
-  register:  ["Shipment register","PO-wise line items — synced to Google Sheets"],
-  step1:     ["Step 1 — Token creation","Owner: Supply Planning Team"],
-  step2:     ["Step 2 — Assign partner","Owner: Logistics Team"],
-  step3:     ["Step 3 — In-transit","Owner: Logistics Partner"],
-  step4:     ["Step 4 — Security inward","Owner: Security Team"],
-  step5:     ["Step 5 — Security outward","Owner: Security Team"],
-  step6:     ["Step 6 — DMS upload","Owner: Warehouse Team"],
-  master:    ["Master data","Admin — vendors, partners, drop locations"]
+// ── ROLES CONFIG ─────────────────────────────────────────────────
+var ROLES = {
+  admin:             { label:"Admin",                      color:"#2563EB", steps:"all" },
+  supply_planning:   { label:"Supply Planning",            color:"#0D9488", steps:["step1","register","master","dashboard"] },
+  logistics_team:    { label:"Logistics Team",             color:"#7C3AED", steps:["step2","register","dashboard"] },
+  logistics_partner: { label:"Logistics Partner",          color:"#EA580C", steps:["step3","dashboard"] },
+  security:          { label:"Security",                   color:"#DC2626", steps:["step4","step6","dashboard"] },
+  warehouse:         { label:"Warehouse Team",             color:"#16A34A", steps:["step5","step7","dashboard"] }
 };
 
-document.querySelectorAll('.nav-item').forEach(function(item){
-  item.addEventListener('click', function(){
-    var id = this.getAttribute('data-screen');
-    document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
-    this.classList.add('active');
-    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
-    document.getElementById('screen-'+id).classList.add('active');
-    document.getElementById('page-title').textContent = PAGE_META[id][0];
-    document.getElementById('page-sub').textContent = PAGE_META[id][1];
+var ROLE_ACTIONS = {
+  supply_planning:   [{title:"Pickup Pending Tokens",key:"step1",c:"var(--blue)",desc:"Tokens awaiting logistics assignment",btn:"Create Shipment",s:"step1"}],
+  logistics_team:    [{title:"Awaiting Partner Assignment",key:"step2",c:"var(--teal)",desc:"Tokens needing a transport partner",btn:"Assign Partners",s:"step2"}],
+  logistics_partner: [{title:"My Assigned Pickups",key:"step3",c:"var(--orange)",desc:"Shipments assigned to you",btn:"View My Schedule",s:"step3"}],
+  security:          [{title:"Vehicles to Check In",key:"step4",c:"var(--amber)",desc:"Vehicles expected today for gate entry",btn:"Gate In",s:"step4"},
+                      {title:"Vehicles to Release",key:"step6",c:"var(--muted)",desc:"Vehicles awaiting exit clearance",btn:"Gate Out",s:"step6"}],
+  warehouse:         [{title:"Ready for Unloading",key:"step5",c:"var(--purple)",desc:"Vehicles checked in, ready to unload",btn:"Unload & Verify",s:"step5"},
+                      {title:"DMS Upload Pending",key:"step7",c:"var(--green)",desc:"Completed shipments needing documents",btn:"Upload & Close",s:"step7"}]
+};
+
+// ── USER STATE ────────────────────────────────────────────────────
+var currentUser = { name:"", role:"admin" };
+
+function initUser() {
+  var saved = localStorage.getItem("wodms_user");
+  if (saved) {
+    try { currentUser = JSON.parse(saved); } catch(e) {}
+  }
+  if (!currentUser.name) {
+    document.getElementById("name-modal").style.display = "flex";
+  } else {
+    applyUser();
+  }
+}
+
+function saveName() {
+  var n = document.getElementById("name-input").value.trim();
+  var r = document.getElementById("role-input-modal").value;
+  if (!n) { alert("Please enter your name."); return; }
+  currentUser = { name: n, role: r };
+  localStorage.setItem("wodms_user", JSON.stringify(currentUser));
+  document.getElementById("name-modal").style.display = "none";
+  applyUser();
+}
+
+function showNameEdit() {
+  document.getElementById("name-input").value = currentUser.name;
+  document.getElementById("role-input-modal").value = currentUser.role;
+  document.getElementById("name-modal").style.display = "flex";
+}
+
+function applyUser() {
+  var role = ROLES[currentUser.role] || ROLES.admin;
+  var initials = currentUser.name.split(" ").map(function(w){return w[0];}).join("").toUpperCase().substring(0,2);
+
+  document.getElementById("hdr-avatar").textContent = initials;
+  document.getElementById("hdr-avatar").style.background = role.color;
+  document.getElementById("hdr-uname").textContent = currentUser.name;
+  document.getElementById("hdr-urole").textContent = role.label;
+  document.getElementById("welcome-name").textContent = "Welcome back, " + currentUser.name;
+  document.getElementById("welcome-role-line").textContent = role.label + " — Inbound Ops Central";
+
+  // Role panel
+  var rp = document.getElementById("role-display-panel");
+  if (currentUser.role === "admin") {
+    rp.innerHTML = '<select class="role-sel" onchange="switchRole(this.value)">' +
+      Object.keys(ROLES).map(function(k){ return '<option value="'+k+'"'+(k===currentUser.role?" selected":"")+">"+ROLES[k].label+"</option>"; }).join("") +
+      "</select>";
+  } else {
+    rp.innerHTML = '<div class="role-display"><div class="role-dot" style="background:'+role.color+'"></div>'+role.label+"</div>";
+  }
+
+  // Nav visibility
+  document.querySelectorAll(".ni[data-roles]").forEach(function(el) {
+    var allowed = el.getAttribute("data-roles");
+    if (allowed === "all" || currentUser.role === "admin") {
+      el.classList.remove("hidden");
+    } else {
+      var steps = role.steps || [];
+      var ds = el.getAttribute("data-s");
+      el.classList.toggle("hidden", steps.indexOf(ds) === -1);
+    }
+  });
+
+  // Role action cards on dashboard
+  buildRoleCards();
+  loadDash();
+}
+
+function switchRole(newRole) {
+  currentUser.role = newRole;
+  localStorage.setItem("wodms_user", JSON.stringify(currentUser));
+  applyUser();
+  // Navigate to dashboard
+  document.querySelector(".ni.active").classList.remove("active");
+  document.querySelector('[data-s="dashboard"]').classList.add("active");
+  showScreen("dashboard");
+}
+
+function buildRoleCards() {
+  var actions = ROLE_ACTIONS[currentUser.role] || [];
+  var el = document.getElementById("role-action-cards");
+  if (actions.length === 0) { el.innerHTML = ""; return; }
+  el.innerHTML = actions.map(function(a) {
+    return '<div class="wc" style="border-left-color:'+a.c+'" onclick="navTo(\''+a.s+'\')">'+
+      '<div class="wc-title">'+a.title+'</div>'+
+      '<div class="wc-val" style="color:'+a.c+'" id="wc-'+a.key+'">—</div>'+
+      '<div class="wc-sub">'+a.desc+'</div>'+
+      '<div class="wc-action">'+a.btn+' →</div></div>';
+  }).join("");
+}
+
+// ── NAV ──────────────────────────────────────────────────────────
+document.querySelectorAll(".ni").forEach(function(el) {
+  el.addEventListener("click", function() {
+    var id = this.getAttribute("data-s");
+    document.querySelectorAll(".ni").forEach(function(n){n.classList.remove("active");});
+    this.classList.add("active");
+    showScreen(id);
     loadScreen(id);
   });
 });
 
-function loadScreen(id){
-  if(id==='dashboard') loadDashboard();
-  else if(id==='register') loadRegister();
-  else if(id==='step1') loadStep1();
-  else if(id==='step2') loadStep2();
-  else if(id==='step3') loadStep3();
-  else if(id==='step6') loadStep6();
-  else if(id==='master') loadMaster();
-}
-function refreshCurrentScreen(){
-  var active = document.querySelector('.nav-item.active');
-  if(active) loadScreen(active.getAttribute('data-screen'));
+function showScreen(id) {
+  document.querySelectorAll(".screen,.welcome").forEach(function(s){s.classList.remove("active");});
+  var el = document.getElementById("sc-"+id);
+  if (el) el.classList.add("active");
 }
 
-// ── API CALLS ────────────────────────────────────────────────
-function apiGet(params, cb){
-  var url = API_URL + "?" + Object.keys(params).map(function(k){return k+"="+encodeURIComponent(params[k]);}).join("&");
-  fetch(url).then(function(r){return r.json();}).then(cb).catch(function(e){
-    console.error("API error",e);
-    cb({error: e.toString()});
-  });
+function navTo(id) {
+  var ni = document.querySelector('[data-s="'+id+'"]');
+  if (ni) ni.click();
 }
-function apiPost(data, cb){
-  fetch(API_URL, {method:"POST", body:JSON.stringify(data), headers:{"Content-Type":"application/json"}})
-    .then(function(r){return r.json();}).then(cb).catch(function(e){
-      console.error("API post error",e);
-      cb({error: e.toString()});
+
+function refreshNow() {
+  var active = document.querySelector(".ni.active");
+  if (active) loadScreen(active.getAttribute("data-s"));
+}
+
+function loadScreen(id) {
+  if (id==="dashboard") loadDash();
+  else if (id==="register") loadReg();
+  else if (id==="step1") loadS1();
+  else if (id==="step2") loadS2();
+  else if (id==="step3") loadS3();
+  else if (id==="step5") loadS5();
+  else if (id==="step7") loadS7();
+  else if (id==="master") loadMaster();
+}
+
+// ── API ──────────────────────────────────────────────────────────
+function apiGet(p, cb) {
+  var url = API+"?"+Object.keys(p).map(function(k){return k+"="+encodeURIComponent(p[k]);}).join("&");
+  fetch(url).then(function(r){return r.json();}).then(cb).catch(function(e){cb({error:e.toString()});});
+}
+function apiPost(d, cb) {
+  fetch(API,{method:"POST",body:JSON.stringify(d),headers:{"Content-Type":"application/json"}})
+    .then(function(r){return r.json();}).then(cb).catch(function(e){cb({error:e.toString()});});
+}
+
+function sBadge(s) {
+  var m={"Pickup Pending":"b-blue","Pending Transit Approval":"b-amber","Logistics Partner Assigned":"b-teal",
+    "In-Transit":"b-purple","Arrived at Warehouse":"b-amber","Vehicle Exited":"b-gray","DMS Completed":"b-green"};
+  return '<span class="badge '+(m[s]||"b-gray")+'">'+s+"</span>";
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────────
+var dockSt=["free","busy","busy","free","buf","busy","free"];
+function loadDash() {
+  document.getElementById("welcome-loading").style.display="block";
+  document.getElementById("welcome-content").style.display="none";
+  apiGet({action:"getDashboard"}, function(d) {
+    if (d.error) { document.getElementById("welcome-loading").innerHTML='<div style="color:var(--muted);padding:20px">Could not connect to backend.</div>'; return; }
+    document.getElementById("welcome-loading").style.display="none";
+    document.getElementById("welcome-content").style.display="block";
+    document.getElementById("sync-time").textContent = d.lastUpdated;
+
+    var used=d.capacity.used||0, pct=Math.min(100,Math.round(used/35));
+    document.getElementById("kpi-row").innerHTML=[
+      {l:"Boxes Today",v:used,s:"of 3,500 daily limit",c:"var(--blue)"},
+      {l:"Active Tokens",v:(d.counts.step1||0)+(d.counts.step2||0)+(d.counts.step3||0)+(d.counts.step4||0),s:"across all active steps",c:"var(--teal)"},
+      {l:"Arrived Today",v:d.counts.step4||0,s:"at warehouse docks",c:"var(--amber)"},
+      {l:"Approvals Pending",v:d.counts.approvalPending||0,s:"Air/Train transit",c:"var(--red)"}
+    ].map(function(k){
+      return '<div class="kpi" style="border-left-color:'+k.c+'">'+
+        '<div class="kpi-lbl">'+k.l+"</div>"+
+        '<div class="kpi-val" style="color:'+k.c+'">'+k.v+"</div>"+
+        '<div class="kpi-sub">'+k.s+"</div></div>";
+    }).join("");
+
+    document.getElementById("cap-fill").style.width=pct+"%";
+    document.getElementById("cap-used").textContent=used.toLocaleString();
+    document.getElementById("cap-pct").textContent=pct+"% used";
+
+    // Update role action cards with real counts
+    var actions = ROLE_ACTIONS[currentUser.role] || [];
+    actions.forEach(function(a) {
+      var el = document.getElementById("wc-"+a.key);
+      if (!el) return;
+      var stepMap={"step1":d.counts.step1,"step2":d.counts.step2,"step3":d.counts.step3,"step4":d.counts.step4,"step5":d.pendingActions.step4,"step6":d.counts.step5,"step7":d.pendingActions.step5};
+      el.textContent = stepMap[a.key] !== undefined ? (stepMap[a.key]||0) : "—";
     });
-}
 
-// ── STATUS BADGE ─────────────────────────────────────────────
-function statusBadge(s){
-  var map = {
-    "Pickup Pending":"b-blue","Pending Transit Approval":"b-amber",
-    "Logistics Partner Assigned":"b-teal","In-Transit":"b-purple",
-    "Arrived at Warehouse":"b-amber","Vehicle Exited":"b-gray",
-    "DMS Completed":"b-green","Transit Rejected":"b-red"
-  };
-  return '<span class="badge '+(map[s]||'b-gray')+'">'+s+'</span>';
-}
-
-// ── DASHBOARD ────────────────────────────────────────────────
-function loadDashboard(){
-  document.getElementById('dash-loading').style.display='flex';
-  document.getElementById('dash-content').style.display='none';
-  apiGet({action:"getDashboard"}, function(d){
-    if(d.error){showDashFallback();return;}
-    document.getElementById('dash-loading').style.display='none';
-    document.getElementById('dash-content').style.display='block';
-    document.getElementById('last-sync').textContent='Updated '+d.lastUpdated;
-
-    // KPIs
-    var used = d.capacity.used||0;
-    var pct = Math.round(used/3500*100);
-    document.getElementById('kpi-row').innerHTML =
-      kpiCard("Boxes today",used,"of 3,500 daily capacity","var(--blue)") +
-      kpiCard("Active tokens",(d.counts.step1||0)+(d.counts.step2||0)+(d.counts.step3||0)+(d.counts.step4||0),"across all active steps","var(--teal)") +
-      kpiCard("Arrived today",d.counts.step4||0,"at warehouse docks","var(--amber)") +
-      kpiCard("Approvals pending",d.counts.approvalPending||0,"Air / Train transit","var(--red)");
-
-    // Capacity
-    document.getElementById('cap-fill').style.width=pct+'%';
-    document.getElementById('cap-text').textContent=used+' of 3,500 boxes ('+pct+'%)';
-
-    // Buckets
     var steps=[
-      {n:d.counts.step1,lbl:"Step 1 — Pickup pending",a:d.pendingActions.step1,amsg:"awaiting logistics assignment",c:"var(--blue)",screen:"step1"},
-      {n:d.counts.step2,lbl:"Step 2 — Partner assignment",a:d.pendingActions.step2,amsg:"awaiting partner selection",c:"var(--teal)",screen:"step2"},
-      {n:d.counts.step3,lbl:"Step 3 — In-transit",a:0,amsg:"vehicles in transit",c:"var(--purple)",screen:"step3"},
-      {n:d.counts.step4,lbl:"Step 4 — Arrived at WH",a:d.pendingActions.step4,amsg:"awaiting dock assignment",c:"var(--amber)",screen:"step4"},
-      {n:d.counts.step5,lbl:"Step 5 — Vehicle exited",a:d.pendingActions.step5,amsg:"awaiting DMS upload",c:"var(--muted)",screen:"step5"},
-      {n:d.counts.step6,lbl:"Step 6 — DMS completed",a:0,amsg:"all done",c:"var(--green)",screen:"step6"}
+      {n:d.counts.step1,l:"Create\nShipment",c:"var(--blue)",s:"step1"},
+      {n:d.counts.step2,l:"Assign\nPartner",c:"var(--teal)",s:"step2"},
+      {n:d.counts.step3,l:"Pickup &\nTransit",c:"var(--purple)",s:"step3"},
+      {n:d.counts.step4,l:"Gate In",c:"var(--amber)",s:"step4"},
+      {n:d.pendingActions.step4||0,l:"Unload &\nVerify",c:"var(--orange)",s:"step5"},
+      {n:d.counts.step5,l:"Gate Out",c:"var(--muted)",s:"step6"},
+      {n:d.pendingActions.step5||0,l:"Upload &\nClose",c:"var(--green)",s:"step7"}
     ];
-    document.getElementById('bucket-grid').innerHTML = steps.map(function(s){
-      return '<div class="bucket" style="border-top-color:'+s.c+'" onclick="goScreen(\''+s.screen+'\')">' +
-        '<div class="bucket-num" style="color:'+s.c+'">'+(s.n||0)+'</div>' +
-        '<div class="bucket-label">'+s.lbl+'</div>' +
-        '<div class="bucket-action" style="color:'+(s.a>0?'var(--amber)':'var(--muted)')+'">'+
-          (s.a>0?s.a+' '+s.amsg:'No pending actions')+'</div></div>';
-    }).join('');
+    document.getElementById("bucket-row").innerHTML=steps.map(function(s,i){
+      return '<div class="bucket" style="border-top-color:'+s.c+'" onclick="navTo(\''+s.s+'\')">'+
+        '<div class="bucket-n" style="color:'+s.c+'">'+(s.n||0)+"</div>"+
+        '<div class="bucket-lbl">Step '+(i+1)+"<br>"+s.l.replace("\n","<br>")+"</div></div>";
+    }).join("");
 
-    // Docks
-    var docks = [13,14,15,16,17,18,19];
-    var dockStatus = ["free","busy","busy","free","buf","busy","free"];
-    document.getElementById('dock-grid').innerHTML = docks.map(function(d,i){
-      var cls = dockStatus[i]==="free"?"dock-free":dockStatus[i]==="busy"?"dock-busy":"dock-buf";
-      var lbl = dockStatus[i]==="free"?"Free":dockStatus[i]==="buf"?"Buffer":"In use";
-      return '<div class="dock '+cls+'">Dock '+d+'<span>'+lbl+'</span></div>';
-    }).join('');
+    document.getElementById("dock-row").innerHTML=[13,14,15,16,17,18,19].map(function(n,i){
+      var st=dockSt[i],cls=st==="free"?"d-free":st==="busy"?"d-busy":"d-buf",lbl=st==="free"?"Free":st==="buf"?"Buffer":"In Use";
+      return '<div class="dock '+cls+'">'+n+'<span>'+lbl+"</span></div>";
+    }).join("");
+
+    apiGet({action:"getTokens"}, function(tokens) {
+      if (!Array.isArray(tokens)) tokens=[];
+      document.getElementById("recent-count").textContent=tokens.length+" total";
+      document.getElementById("recent-tbl").innerHTML = tokens.length===0
+        ? '<div style="padding:16px;text-align:center;color:var(--faint);font-size:12px">No shipments yet</div>'
+        : '<table><thead><tr><th>Token</th><th>Manufacturer</th><th>Boxes</th><th>Status</th></tr></thead><tbody>'+
+          tokens.slice(0,8).map(function(r){
+            return "<tr><td class='mono'>"+r.tokenId+"</td><td>"+r.manufacturerName+"</td><td>"+r.numberOfBoxes+"</td><td>"+sBadge(r.status)+"</td></tr>";
+          }).join("")+"</tbody></table>";
+    });
   });
 }
-function kpiCard(label,val,sub,color){
-  return '<div class="kpi" style="border-top-color:'+color+'">' +
-    '<div class="kpi-label">'+label+'</div>' +
-    '<div class="kpi-val" style="color:'+color+'">'+val+'</div>' +
-    '<div class="kpi-sub">'+sub+'</div></div>';
-}
-function showDashFallback(){
-  document.getElementById('dash-loading').innerHTML='<div style="color:var(--muted);padding:20px">Connecting to Inbound Ops Central backend...<br>If this persists, check your internet connection.</div>';
-  document.getElementById('dash-loading').style.display='block';
-}
-function goScreen(id){
-  document.querySelector('[data-screen="'+id+'"]').click();
-}
 
-// ── REGISTER ─────────────────────────────────────────────────
-function loadRegister(){
-  var step = document.getElementById('filter-step').value;
-  document.getElementById('reg-loading').style.display='block';
-  document.getElementById('reg-table').style.display='none';
-  var params = {action:"getTokens"};
-  if(step) params.step=step;
-  apiGet(params, function(rows){
-    document.getElementById('reg-loading').style.display='none';
-    document.getElementById('reg-table').style.display='block';
-    if(!Array.isArray(rows)) rows=[];
-    var html = rows.map(function(r){
-      return '<tr>' +
-        '<td style="font-family:monospace;font-size:11px">'+r.tokenId+'</td>' +
-        '<td>'+r.poNumber+'</td><td>'+r.invoiceNumber+'</td>' +
-        '<td>'+r.manufacturerName+'</td><td style="font-family:monospace;font-size:11px">'+r.vehicleNumber+'</td>' +
-        '<td style="font-family:monospace;font-size:11px">'+r.lrNumber+'</td>' +
-        '<td>'+r.pickupDate+'</td><td>'+r.numberOfBoxes+'</td>' +
-        '<td>'+r.dropLocation+'</td><td>'+statusBadge(r.status)+'</td></tr>';
-    }).join('');
-    document.getElementById('reg-body').innerHTML = html || '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--muted)">No shipments found</td></tr>';
+// ── REGISTER ────────────────────────────────────────────────────
+function loadReg() {
+  var step=document.getElementById("reg-filter").value;
+  document.getElementById("reg-tbl").innerHTML='<div class="loading" style="padding:20px"><div class="spinner"></div></div>';
+  var p={action:"getTokens"};if(step)p.step=step;
+  apiGet(p,function(rows){
+    if(!Array.isArray(rows))rows=[];
+    if(!rows.length){document.getElementById("reg-tbl").innerHTML='<div style="padding:20px;text-align:center;color:var(--faint)">No records found</div>';return;}
+    document.getElementById("reg-tbl").innerHTML="<table><thead><tr>"+
+      "<th>Token</th><th>PO#</th><th>Invoice#</th><th>Manufacturer</th><th>Vehicle#</th><th>LR#</th><th>Pickup</th><th>Boxes</th><th>Drop</th><th>Status</th>"+
+      "</tr></thead><tbody>"+rows.map(function(r){
+        return "<tr><td class='mono' style='font-size:10px'>"+r.tokenId+"</td><td>"+r.poNumber+"</td><td>"+r.invoiceNumber+"</td>"+
+          "<td>"+r.manufacturerName+"</td><td class='mono' style='font-size:10px'>"+r.vehicleNumber+"</td>"+
+          "<td class='mono' style='font-size:10px'>"+r.lrNumber+"</td><td>"+r.pickupDate+"</td>"+
+          "<td>"+r.numberOfBoxes+"</td><td>"+r.dropLocation+"</td><td>"+sBadge(r.status)+"</td></tr>";
+      }).join("")+"</tbody></table>";
   });
 }
 function exportCSV(){
-  var rows = document.querySelectorAll('#reg-body tr');
-  var csv = "Token ID,PO#,Invoice#,Manufacturer,Vehicle#,LR#,Pickup Date,Boxes,Drop,Status\n";
-  rows.forEach(function(tr){
-    var cells = Array.from(tr.cells).map(function(td){return '"'+td.textContent.trim()+'"';});
-    csv += cells.join(',') + '\n';
-  });
-  var a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'WODMS_Register_'+new Date().toISOString().split('T')[0]+'.csv';
-  a.click();
+  var rows=document.querySelectorAll("#reg-tbl tr");
+  var csv=Array.from(rows).map(function(r){return Array.from(r.cells).map(function(c){return '"'+c.textContent.trim()+'"';}).join(",");}).join("\n");
+  var a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);a.download="WODMS_"+new Date().toISOString().split("T")[0]+".csv";a.click();
 }
 
-// ── STEP 1 ────────────────────────────────────────────────────
-var vendorCache = [];
-function loadStep1(){
-  apiGet({action:"getVendors"}, function(vendors){
-    if(!Array.isArray(vendors)) return;
-    vendorCache = vendors;
-    var sel = document.getElementById('s1-vendor');
-    vendors.forEach(function(v){
-      if(v.active==="Active"||v.active===true){
-        var opt = document.createElement('option');
-        opt.value = v.code;
-        opt.textContent = v.name;
-        opt.dataset.poc = v.pocName;
-        opt.dataset.mobile = v.pocMobile;
-        sel.appendChild(opt);
-      }
-    });
+// ── STEP 1 ───────────────────────────────────────────────────────
+var vCache=[],pCache=[];
+function loadS1(){
+  apiGet({action:"getVendors"},function(vs){
+    if(!Array.isArray(vs))return;vCache=vs;
+    var sel=document.getElementById("s1-vendor");
+    sel.innerHTML='<option value="">Select vendor...</option>';
+    vs.forEach(function(v){if(v.active==="Active"||v.active===true){var o=document.createElement("option");o.value=v.code;o.textContent=v.name;o.dataset.poc=v.pocName||"";o.dataset.mob=v.pocMobile||"";sel.appendChild(o);}});
   });
   loadPOs();
 }
 function loadPOs(){
-  apiGet({action:"getPOData"}, function(d){
-    if(d.error) return;
-    document.getElementById('po-sync-time').textContent = 'Last sync: '+(d.lastSync||'Unknown');
-    var sel = document.getElementById('s1-po');
-    sel.innerHTML = '<option value="">Select PO...</option>';
-    var pos = {};
-    (d.pos||[]).forEach(function(p){pos[p.poNumber]=pos[p.poNumber]||[];pos[p.poNumber].push(p);});
-    Object.keys(pos).forEach(function(po){
-      var opt = document.createElement('option');
-      opt.value = po;
-      opt.textContent = po + ' — ' + pos[po][0].vendor;
-      opt.dataset.skus = JSON.stringify(pos[po]);
-      sel.appendChild(opt);
-    });
-    sel.onchange = function(){
-      var opt = sel.options[sel.selectedIndex];
-      if(!opt.dataset.skus) return;
-      var skus = JSON.parse(opt.dataset.skus);
-      var html = skus.map(function(s){
-        return '<tr><td style="font-family:monospace;font-size:11px">'+s.skuCode+'</td>' +
-          '<td>'+s.description+'</td><td>'+s.orderedQty+'</td>' +
-          '<td><input type="number" value="'+s.orderedQty+'" onchange="checkVar(this,'+s.orderedQty+')"></td>' +
-          '<td style="color:var(--muted)">0 (exact)</td></tr>';
-      }).join('');
-      document.getElementById('s1-sku-body').innerHTML = html;
+  apiGet({action:"getPOData"},function(d){
+    if(d.error)return;
+    document.getElementById("s1-sync-time").textContent=d.lastSync||"—";
+    var sel=document.getElementById("s1-po");sel.innerHTML='<option value="">Select PO...</option>';
+    var pos={};(d.pos||[]).forEach(function(p){pos[p.poNumber]=pos[p.poNumber]||[];pos[p.poNumber].push(p);});
+    Object.keys(pos).forEach(function(po){var o=document.createElement("option");o.value=po;o.textContent=po;o.dataset.skus=JSON.stringify(pos[po]);sel.appendChild(o);});
+    sel.onchange=function(){
+      var opt=sel.options[sel.selectedIndex];if(!opt.dataset.skus)return;
+      var skus=JSON.parse(opt.dataset.skus);
+      document.getElementById("s1-sku-body").innerHTML=skus.map(function(s){
+        return "<tr><td class='mono'>"+s.skuCode+"</td><td>"+s.description+"</td><td>"+s.pendingQty+"</td>"+
+          "<td><input type='number' value='"+s.pendingQty+"' onchange='chkVar(this,"+s.pendingQty+")'></td>"+
+          "<td style='color:var(--muted)'>0</td></tr>";
+      }).join("");
     };
   });
 }
-function onVendorChange(){
-  var sel = document.getElementById('s1-vendor');
-  var opt = sel.options[sel.selectedIndex];
-  document.getElementById('s1-poc-name').value = opt.dataset.poc || '';
-  document.getElementById('s1-poc-mobile').value = opt.dataset.mobile || '';
+function onVendor(){var sel=document.getElementById("s1-vendor"),opt=sel.options[sel.selectedIndex];document.getElementById("s1-poc-name").value=opt.dataset.poc||"";document.getElementById("s1-poc-mob").value=opt.dataset.mob||"";}
+function pickR(el,grp){document.getElementById(grp).querySelectorAll(".ro").forEach(function(o){o.classList.remove("sel");});el.classList.add("sel");}
+function getR(grp){var s=document.querySelector("#"+grp+" .ro.sel");return s?s.getAttribute("data-val"):"";}
+function chkApproval(){
+  var m=getR("s1-transit"),p=getR("s1-ptype"),b=document.getElementById("s1-approval");
+  if((m==="Air"||m==="Train")&&p){b.textContent="Approval required — will be sent to "+(p==="FG"?"Manan Shah":"Abhinav Gupta")+" ("+m+" mode for "+p+")";b.style.display="block";}
+  else{b.style.display="none";}
 }
-function pickRadio(el, group){
-  document.querySelectorAll('#screen-'+group.split('-').join(' #screen-')+'#'+group+' .radio-opt, [id="'+group+'"] .radio-opt').forEach(function(o){o.classList.remove('sel');});
-  el.closest('.radio-group').querySelectorAll('.radio-opt').forEach(function(o){o.classList.remove('sel');});
-  el.classList.add('sel');
+function suggestV(){
+  var b=parseInt(document.getElementById("s1-boxes").value)||0,w=parseInt(document.getElementById("s1-wt").value)||0;
+  document.getElementById("s1-veh").value=b<=100&&w<=500?"14 feet":b<=300&&w<=1500?"20 feet":b<=600&&w<=3000?"24 feet":"32 feet";
 }
-function getRadio(groupId){
-  var sel = document.querySelector('#'+groupId+' .radio-opt.sel');
-  return sel ? sel.getAttribute('data-val') : '';
+function chkVar(inp,pq){
+  var v=parseInt(inp.value)||0,d=v-pq,td=inp.closest("tr").cells[4],err=document.getElementById("s1-po-err");
+  if(d>0){td.textContent="+"+d+" EXCEEDS";td.style.color="var(--red)";err.style.display="block";}
+  else if(d<0){td.textContent=d+" (partial)";td.style.color="var(--teal)";err.style.display="none";}
+  else{td.textContent="0";td.style.color="var(--muted)";err.style.display="none";}
 }
-function checkApproval(){
-  var mode = getRadio('s1-transit');
-  var ptype = getRadio('s1-ptype');
-  var banner = document.getElementById('s1-approval-banner');
-  if((mode==='Air'||mode==='Train')&&ptype){
-    var nm = ptype==='FG'?'Manan Shah (manan.shah@mosaicwellness.in)':'Abhinav Gupta (abhinav@mosaicwellness.in)';
-    document.getElementById('s1-approver').textContent=nm;
-    banner.style.display='block';
-  } else {
-    banner.style.display='none';
+function addSKURow(){var tb=document.getElementById("s1-sku-body"),r=tb.insertRow();r.innerHTML="<td><input placeholder='SKU' style='width:100px'></td><td><input placeholder='Description'></td><td><input type='number' placeholder='0' style='width:70px'></td><td><input type='number' placeholder='0' style='width:70px'></td><td style='color:var(--muted)'>—</td>";}
+function doCreateToken(){
+  var vs=document.getElementById("s1-vendor");if(!vs.value){alert("Select a vendor.");return;}
+  var boxes=parseInt(document.getElementById("s1-boxes").value)||0;if(!boxes){alert("Enter number of boxes.");return;}
+  var skuRows=document.querySelectorAll("#s1-sku-body tr"),skus=[];
+  skuRows.forEach(function(tr){var inp=tr.querySelectorAll("input");if(inp.length>=4&&inp[0].value)skus.push({skuCode:inp[0].value,description:inp[1].value,poQty:parseInt(inp[2].value)||0,shipQty:parseInt(inp[3].value)||0});});
+  var btn=event.currentTarget;btn.textContent="Creating...";btn.disabled=true;
+  apiPost({action:"createToken",data:{manufacturerName:vs.options[vs.selectedIndex].text,vendorCode:vs.value,vendorPOC:document.getElementById("s1-poc-name").value,vendorPOCMobile:document.getElementById("s1-poc-mob").value,dropLocation:getR("s1-drop"),productType:getR("s1-ptype"),transitMode:getR("s1-transit"),numberOfBoxes:boxes,weight:document.getElementById("s1-wt").value,vehicleSize:document.getElementById("s1-veh").value,poNumber:document.getElementById("s1-po").value,skus:skus}},function(res){
+    btn.textContent="Create Shipment Token";btn.disabled=false;
+    if(res.error){alert("Error: "+res.error);return;}
+    if(res.blocked){var msg="Token blocked:\n";(res.errors||[]).forEach(function(e){msg+="\n• "+e.message;});alert(msg);return;}
+    var ok=document.getElementById("s1-ok");ok.textContent="Token "+res.tokenId+" created. Status: "+res.status;ok.style.display="block";
+    setTimeout(function(){ok.style.display="none";},6000);clearS1();
+  });
+}
+function clearS1(){
+  document.getElementById("s1-vendor").selectedIndex=0;["s1-poc-name","s1-poc-mob","s1-boxes","s1-wt","s1-veh"].forEach(function(id){document.getElementById(id).value="";});
+  document.getElementById("s1-sku-body").innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--faint);padding:12px">Select a PO to load SKUs</td></tr>';
+  document.getElementById("s1-approval").style.display="none";document.getElementById("s1-po-err").style.display="none";
+}
+
+// ── CALENDAR ENGINE ───────────────────────────────────────────────
+var calState = { s2: { year:0, month:0 }, s3: { year:0, month:0 } };
+var allTokens = [];
+
+function buildCalendar(containerId, year, month, tokens, onDayClick) {
+  var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  var firstDay=new Date(year,month,1).getDay();
+  var daysInMonth=new Date(year,month+1,0).getDate();
+  var today=new Date();
+
+  // Build appointment map: date string -> array of tokens
+  var apptMap={};
+  tokens.forEach(function(t){
+    var dateStr=t.scheduledDeliveryDate||t.pickupDate||"";
+    if(!dateStr)return;
+    // Try to parse "03 Apr 2026" or "2026-04-03"
+    var d;
+    if(dateStr.match(/^\d{4}-\d{2}-\d{2}$/)){d=new Date(dateStr);}
+    else{try{d=new Date(dateStr);}catch(e){return;}}
+    if(isNaN(d.getTime()))return;
+    if(d.getFullYear()===year&&d.getMonth()===month){
+      var key=d.getDate();apptMap[key]=apptMap[key]||[];apptMap[key].push(t);
+    }
+  });
+
+  var html='<div class="cal-header">'+
+    '<div class="cal-title">'+months[month]+" "+year+"</div>"+
+    '<div class="cal-nav">'+
+      '<button onclick="calPrev(\''+containerId+'\')">&#8592;</button>'+
+      '<button onclick="calToday(\''+containerId+'\')">Today</button>'+
+      '<button onclick="calNext(\''+containerId+'\')">&#8594;</button>'+
+    "</div></div>"+
+    '<div class="cal-grid">'+
+    days.map(function(d){return '<div class="cal-day-hdr">'+d+"</div>";}).join("");
+
+  // Empty cells before first day
+  for(var i=0;i<firstDay;i++)html+='<div class="cal-cell other-month"></div>';
+
+  for(var day=1;day<=daysInMonth;day++){
+    var isToday=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===day;
+    var appts=apptMap[day]||[];
+    html+='<div class="cal-cell'+(isToday?" today":"")+ '" onclick="'+onDayClick+'('+day+','+month+','+year+')">'+
+      '<div class="cal-date">'+day+"</div>"+
+      appts.slice(0,3).map(function(t){
+        var cls=t.status==="In-Transit"?"transit":t.status==="Logistics Partner Assigned"?"pending":"confirmed";
+        return '<div class="cal-appt '+cls+'">'+t.manufacturerName.substring(0,12)+"</div>";
+      }).join("")+
+      (appts.length>3?'<div style="font-size:9px;color:var(--faint)">+'+( appts.length-3)+" more</div>":"")+
+      "</div>";
   }
-}
-function suggestVehicle(){
-  var b=parseInt(document.getElementById('s1-boxes').value)||0;
-  var w=parseInt(document.getElementById('s1-weight').value)||0;
-  var v = b<=100&&w<=500?'14 feet':b<=300&&w<=1500?'20 feet':b<=600&&w<=3000?'24 feet':'32 feet';
-  document.getElementById('s1-vehicle').value=v;
-}
-function checkVar(inp, poQty){
-  var v=parseInt(inp.value)||0, diff=v-poQty;
-  var varCell=inp.closest('tr').cells[4];
-  var warn=document.getElementById('s1-po-warn');
-  if(diff>0){varCell.textContent='+'+diff+' EXCEEDS PO';varCell.style.color='var(--red)';warn.style.display='block';}
-  else if(diff<0){varCell.textContent=diff+' (partial OK)';varCell.style.color='var(--teal)';warn.style.display='none';}
-  else{varCell.textContent='0 (exact)';varCell.style.color='var(--muted)';warn.style.display='none';}
-}
-function addSKURow(){
-  var tb=document.getElementById('s1-sku-body');
-  var idx=tb.rows.length;
-  var row=tb.insertRow();
-  row.innerHTML='<td><input placeholder="SKU code" style="width:110px"></td><td><input placeholder="Description"></td><td><input type="number" placeholder="PO qty" style="width:80px"></td><td><input type="number" placeholder="Ship qty" style="width:80px"></td><td style="color:var(--muted)">—</td>';
-}
-function submitCreateToken(){
-  var sel=document.getElementById('s1-vendor');
-  if(!sel.value){alert('Please select a manufacturing vendor.');return;}
-  var boxes=parseInt(document.getElementById('s1-boxes').value)||0;
-  if(!boxes){alert('Please enter number of pickup boxes.');return;}
-  var skuRows=document.querySelectorAll('#s1-sku-body tr');
-  var skus=[];
-  skuRows.forEach(function(tr){
-    var inputs=tr.querySelectorAll('input');
-    if(inputs.length>=4&&inputs[0].value){
-      skus.push({skuCode:inputs[0].value,description:inputs[1].value,poQty:parseInt(inputs[2].value)||0,shipQty:parseInt(inputs[3].value)||0});
-    }
-  });
-  var data={
-    action:'createToken',
-    data:{
-      manufacturerName:sel.options[sel.selectedIndex].text,
-      vendorCode:sel.value,
-      vendorPOC:document.getElementById('s1-poc-name').value,
-      vendorPOCMobile:document.getElementById('s1-poc-mobile').value,
-      dropLocation:getRadio('s1-drop'),
-      productType:getRadio('s1-ptype'),
-      transitMode:getRadio('s1-transit'),
-      numberOfBoxes:boxes,
-      weight:document.getElementById('s1-weight').value,
-      vehicleSize:document.getElementById('s1-vehicle').value,
-      poNumber:document.getElementById('s1-po').value,
-      skus:skus
-    }
-  };
-  var btn=event.currentTarget;
-  btn.textContent='Creating...';btn.disabled=true;
-  apiPost(data, function(res){
-    btn.textContent='Create token';btn.disabled=false;
-    if(res.error){alert('Error: '+res.error);return;}
-    var a=document.getElementById('s1-alert');
-    a.textContent='Token '+res.tokenId+' created. Status: '+res.status+'. Logistics Team notified.';
-    a.style.display='block';
-    setTimeout(function(){a.style.display='none';},6000);
-    clearStep1();
-  });
-}
-function clearStep1(){
-  document.getElementById('s1-vendor').selectedIndex=0;
-  document.getElementById('s1-poc-name').value='';
-  document.getElementById('s1-poc-mobile').value='';
-  document.getElementById('s1-boxes').value='';
-  document.getElementById('s1-weight').value='';
-  document.getElementById('s1-vehicle').value='';
-  document.getElementById('s1-sku-body').innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">Select a PO to load SKU lines</td></tr>';
-  document.getElementById('s1-approval-banner').style.display='none';
-  document.getElementById('s1-po-warn').style.display='none';
+  html+="</div>";
+  document.getElementById(containerId).innerHTML=html;
 }
 
-// ── STEP 2 ────────────────────────────────────────────────────
-var partnerCache=[];
-function loadStep2(){
-  apiGet({action:'getPartners'}, function(pts){if(Array.isArray(pts))partnerCache=pts;});
-  apiGet({action:'getTokens',step:'1'}, function(tokens){
-    var el=document.getElementById('s2-content');
-    if(!Array.isArray(tokens)||tokens.length===0){
-      el.innerHTML='<div class="alert alert-info">No tokens awaiting partner assignment.</div>';return;
-    }
-    var html='<div class="card"><div class="card-title">Tokens awaiting partner assignment ('+tokens.length+')</div>';
-    tokens.forEach(function(t){
-      var pOpts=partnerCache.map(function(p){return '<option value="'+p.name+'">'+p.name+(t.logisticsPartner===p.name?' (Preferred)':'')+'</option>';}).join('');
-      var isPending = t.status==='Pending Transit Approval';
-      html+='<div class="token-card" id="tc-'+t.tokenId+'">' +
-        '<div style="flex:1"><div class="token-id">'+t.tokenId+'</div>' +
-        '<div class="token-title">'+t.manufacturerName+' — '+t.numberOfBoxes+' boxes</div>' +
-        '<div class="token-meta">'+t.productType+' | '+t.transitMode+' | '+t.dropLocation+' | Created '+t.createdAt+'</div></div>' +
-        '<div class="token-actions">' +
-        (isPending?'<span class="badge b-amber">Awaiting transit approval</span>':
-          '<select id="lp-'+t.tokenId+'" style="width:200px"><option value="">Select partner...</option>'+pOpts+'</select>' +
-          '<button class="btn btn-primary btn-sm" onclick="doAssignPartner(\''+t.tokenId+'\',this)">Assign</button>') +
-        '</div></div>';
-    });
-    html+='</div>';
-    el.innerHTML=html;
+function calPrev(id){
+  var prefix=id==="s2-cal"?"s2":"s3";
+  calState[prefix].month--;if(calState[prefix].month<0){calState[prefix].month=11;calState[prefix].year--;}
+  if(id==="s2-cal")renderS2Cal();else renderS3Cal();
+}
+function calNext(id){
+  var prefix=id==="s2-cal"?"s2":"s3";
+  calState[prefix].month++;if(calState[prefix].month>11){calState[prefix].month=0;calState[prefix].year++;}
+  if(id==="s2-cal")renderS2Cal();else renderS3Cal();
+}
+function calToday(id){
+  var now=new Date(),prefix=id==="s2-cal"?"s2":"s3";
+  calState[prefix].year=now.getFullYear();calState[prefix].month=now.getMonth();
+  if(id==="s2-cal")renderS2Cal();else renderS3Cal();
+}
+
+function renderS2Cal(){
+  buildCalendar("s2-cal",calState.s2.year,calState.s2.month,allTokens,"s2DayClick");
+}
+function renderS3Cal(){
+  buildCalendar("s3-cal",calState.s3.year,calState.s3.month,allTokens,"s3DayClick");
+}
+
+function s2DayClick(day,month,year){
+  var d=new Date(year,month,day);
+  var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById("s2-cal-date-title").textContent="Appointments — "+day+" "+months[month]+" "+year;
+  var dayTokens=allTokens.filter(function(t){
+    var ds=t.scheduledDeliveryDate||t.pickupDate||"";if(!ds)return false;
+    var td;try{td=new Date(ds);}catch(e){return false;}
+    return td.getFullYear()===year&&td.getMonth()===month&&td.getDate()===day;
+  });
+  renderApptList("s2-appt-list",dayTokens);
+}
+function s3DayClick(day,month,year){
+  var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById("s3-cal-date-title").textContent="Deliveries — "+day+" "+months[month]+" "+year;
+  var dayTokens=allTokens.filter(function(t){
+    var ds=t.scheduledDeliveryDate||t.pickupDate||"";if(!ds)return false;
+    var td;try{td=new Date(ds);}catch(e){return false;}
+    return td.getFullYear()===year&&td.getMonth()===month&&td.getDate()===day;
+  });
+  renderApptList("s3-appt-list",dayTokens);
+}
+
+function renderApptList(containerId,tokens){
+  var el=document.getElementById(containerId);
+  if(!tokens.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--faint);font-size:12px">No appointments on this date</div>';return;}
+  el.innerHTML=tokens.map(function(t){
+    return '<div class="appt-item">'+
+      '<div class="appt-time">'+(t.appointmentTime||"TBD")+"</div>"+
+      '<div class="appt-info">'+
+        '<div class="appt-token">'+t.tokenId+"</div>"+
+        '<div class="appt-vendor">'+t.manufacturerName+"</div>"+
+        '<div class="appt-meta">'+t.numberOfBoxes+" boxes | "+t.dropLocation+" | "+t.logisticsPartner+"</div>"+
+      "</div>"+
+      '<div class="appt-badge">'+sBadge(t.status)+"</div></div>";
+  }).join("");
+}
+
+// ── STEP 2 ───────────────────────────────────────────────────────
+function loadS2(){
+  apiGet({action:"getPartners"},function(pts){if(Array.isArray(pts))pCache=pts;});
+  apiGet({action:"getTokens",step:"1"},function(tokens){
+    var el=document.getElementById("s2-body");
+    if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-info alert">No tokens awaiting partner assignment.</div>';return;}
+    el.innerHTML=tokens.map(function(t){
+      var pOpts=pCache.map(function(p){return'<option value="'+p.name+'">'+p.name+"</option>";}).join("");
+      var isPend=t.status==="Pending Transit Approval";
+      return'<div class="tok" id="tok-'+t.tokenId+'">'+
+        '<div style="flex:1"><div class="tok-id">'+t.tokenId+'</div>'+
+        '<div class="tok-title">'+t.manufacturerName+" — "+t.numberOfBoxes+" boxes</div>"+
+        '<div class="tok-meta">'+t.productType+" | "+t.transitMode+" | "+t.dropLocation+" | "+t.createdAt+"</div></div>"+
+        '<div class="tok-actions">'+
+        (isPend?'<span class="badge b-amber">Awaiting Transit Approval</span>':
+          '<select id="lp-'+t.tokenId+'" style="width:180px;font-size:11px"><option value="">Select partner...</option>'+pOpts+"</select>"+
+          '<button class="btn btn-primary btn-sm" onclick="doAssign(\''+t.tokenId+"\',this)\">Assign</button>")+
+        "</div></div>";
+    }).join("");
+  });
+  // Load all tokens for calendar
+  apiGet({action:"getTokens"},function(tokens){
+    if(Array.isArray(tokens)){allTokens=tokens;}
+    var now=new Date();
+    calState.s2={year:now.getFullYear(),month:now.getMonth()};
+    renderS2Cal();
   });
 }
-function doAssignPartner(tokenId, btn){
-  var sel=document.getElementById('lp-'+tokenId);
-  if(!sel||!sel.value){alert('Please select a logistics partner.');return;}
-  btn.textContent='Assigning...';btn.disabled=true;
-  apiPost({action:'assignPartner',data:{tokenId:tokenId,partnerName:sel.value}}, function(res){
-    if(res.error){alert('Error: '+res.error);btn.textContent='Assign';btn.disabled=false;return;}
-    var card=document.getElementById('tc-'+tokenId);
-    if(card){card.style.opacity='0.4';card.querySelector('.token-actions').innerHTML='<span class="badge b-teal">Assigned to '+sel.value+'</span>';}
+function s2tab(tab){
+  document.getElementById("s2-assign-panel").style.display=tab==="assign"?"block":"none";
+  document.getElementById("s2-cal-panel").style.display=tab==="cal"?"block":"none";
+  document.getElementById("s2-tab-assign").style.cssText=tab==="assign"?"background:var(--blue);color:#fff;border-color:var(--blue)":"";
+  document.getElementById("s2-tab-cal").style.cssText=tab==="cal"?"background:var(--blue);color:#fff;border-color:var(--blue)":"";
+}
+function doAssign(tid,btn){
+  var sel=document.getElementById("lp-"+tid);if(!sel||!sel.value){alert("Select a logistics partner.");return;}
+  btn.textContent="Assigning...";btn.disabled=true;
+  apiPost({action:"assignPartner",data:{tokenId:tid,partnerName:sel.value}},function(res){
+    if(res.error){alert("Error: "+res.error);btn.textContent="Assign";btn.disabled=false;return;}
+    var card=document.getElementById("tok-"+tid);
+    if(card){card.style.opacity=".45";card.querySelector(".tok-actions").innerHTML='<span class="badge b-teal">Assigned to '+sel.value+"</span>";}
   });
 }
 
-// ── STEP 3 ────────────────────────────────────────────────────
-function loadStep3(){
-  apiGet({action:'getTokens',step:'2'}, function(tokens){
-    var el=document.getElementById('s3-content');
-    if(!Array.isArray(tokens)||tokens.length===0){
-      el.innerHTML='<div class="alert alert-info">No tokens awaiting pickup details.</div>';return;
-    }
-    var html=tokens.map(function(t){
-      return '<div class="card">' +
-        '<div style="background:var(--lblue);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12px">' +
-        '<strong>'+t.tokenId+'</strong> — '+t.manufacturerName+' | '+t.numberOfBoxes+' boxes | '+t.dropLocation+' | Partner: '+(t.logisticsPartner||'—')+'</div>' +
-        '<div class="sdiv">Enter pickup details</div>' +
-        '<div class="form-grid"><div class="fgroup" style="margin-top:0"><label>LR #</label><input id="lr-'+t.tokenId+'" placeholder="LR-MW-56789"></div>' +
-        '<div class="fgroup" style="margin-top:0"><label>Invoice #</label><input id="inv-'+t.tokenId+'" placeholder="INV-HW-1234"></div>' +
-        '<div class="fgroup"><label>EWB #</label><input id="ewb-'+t.tokenId+'" placeholder="1234 5678 9012"></div>' +
-        '<div class="fgroup"><label>Actual boxes</label><input type="number" id="boxes-'+t.tokenId+'" placeholder="'+t.numberOfBoxes+'"></div>' +
-        '<div class="fgroup"><label>Pickup date</label><input type="date" id="pd-'+t.tokenId+'" onchange="calcDel(this,\''+t.tokenId+'\')"></div>' +
-        '<div class="fgroup"><label>Vehicle #</label><input id="vn-'+t.tokenId+'" placeholder="MH04AB1234"></div></div>' +
-        '<div class="fgroup"><label>Vehicle size</label><div class="radio-group" id="vs-'+t.tokenId+'">' +
-        ['14 feet','20 feet','24 feet','32 feet'].map(function(v,i){return '<div class="radio-opt'+(i===2?' sel':'')+'" data-val="'+v+'" onclick="pickRadio(this,\'vs-'+t.tokenId+'\')"><div class="radio-circle"><div class="radio-inner"></div></div>'+v+'</div>';}).join('') +
-        '</div></div>' +
-        '<div id="del-'+t.tokenId+'" style="display:none" class="alert alert-success"></div>' +
-        '<div style="margin-top:14px"><button class="btn btn-primary" onclick="doSubmitPickup(\''+t.tokenId+'\',this)">Submit pickup details</button></div></div>';
-    }).join('');
-    el.innerHTML=html;
+// ── STEP 3 ───────────────────────────────────────────────────────
+function loadS3(){
+  apiGet({action:"getTokens",step:"2"},function(tokens){
+    var el=document.getElementById("s3-body");
+    if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-info alert">No tokens awaiting pickup details.</div>';return;}
+    el.innerHTML=tokens.map(function(t){
+      return'<div class="card"><div class="card-hdr">'+
+        '<div class="card-hdr-title">'+t.tokenId+" — "+t.manufacturerName+"</div>"+
+        '<div style="font-size:11px;color:var(--muted)">'+t.numberOfBoxes+" boxes | "+t.dropLocation+" | "+t.logisticsPartner+"</div></div>"+
+        '<div class="card-body"><div class="form-grid3">'+
+        '<div class="fg"><label>LR #</label><input id="lr-'+t.tokenId+'" placeholder="LR-MW-00000"></div>'+
+        '<div class="fg"><label>Invoice #</label><input id="inv-'+t.tokenId+'" placeholder="INV-00000"></div>'+
+        '<div class="fg"><label>EWB #</label><input id="ewb-'+t.tokenId+'" placeholder="1234 5678 9012"></div>'+
+        '<div class="fg"><label>Actual Boxes</label><input type="number" id="bx-'+t.tokenId+'" placeholder="'+t.numberOfBoxes+'"></div>'+
+        '<div class="fg"><label>Pickup Date</label><input type="date" id="pd-'+t.tokenId+'" onchange="calcDel(this,\''+t.tokenId+'\')"></div>'+
+        '<div class="fg"><label>Vehicle #</label><input id="vn-'+t.tokenId+'" placeholder="MH04AB1234"></div>'+
+        "</div>"+
+        '<div class="fg"><label>Vehicle Size</label><div class="radio-row" id="vs-'+t.tokenId+'">'+
+        ["14 feet","20 feet","24 feet","32 feet"].map(function(v,i){return'<div class="ro'+(i===2?" sel":"")+'" data-val="'+v+'" onclick="pickR(this,\'vs-'+t.tokenId+'\')"><div class="ro-dot"><div class="ro-inner"></div></div>'+v+"</div>";}).join("")+
+        "</div></div>"+
+        '<div id="del-'+t.tokenId+'" class="al-ok alert" style="display:none;font-size:11px;margin-top:6px"></div>'+
+        '<div style="margin-top:8px"><button class="btn btn-primary btn-sm" onclick="doPickup(\''+t.tokenId+"\',this)\">Submit Pickup Details</button></div>"+
+        "</div></div>";
+    }).join("");
+  });
+  // Load calendar
+  apiGet({action:"getTokens"},function(tokens){
+    if(Array.isArray(tokens)){allTokens=tokens;}
+    var now=new Date();
+    calState.s3={year:now.getFullYear(),month:now.getMonth()};
+    renderS3Cal();
   });
 }
-function calcDel(inp, tokenId){
+function s3tab(tab){
+  document.getElementById("s3-tokens-panel").style.display=tab==="tokens"?"block":"none";
+  document.getElementById("s3-cal-panel").style.display=tab==="cal"?"block":"none";
+  document.getElementById("s3-tab-tokens").style.cssText=tab==="tokens"?"background:var(--blue);color:#fff;border-color:var(--blue)":"";
+  document.getElementById("s3-tab-cal").style.cssText=tab==="cal"?"background:var(--blue);color:#fff;border-color:var(--blue)":"";
+}
+function calcDel(inp,tid){
   if(!inp.value)return;
   var d=new Date(inp.value);d.setDate(d.getDate()+5);
-  var ds=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  var el=document.getElementById('del-'+tokenId);
-  el.style.display='block';
-  el.textContent='Expected delivery: '+ds+' (Pickup + 5 days). Auto-appointment will be scheduled on submission.';
+  var el=document.getElementById("del-"+tid);el.style.display="block";
+  el.textContent="Expected delivery: "+d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})+" (Pickup + 5 days). Appointment auto-scheduled.";
 }
-function doSubmitPickup(tokenId,btn){
-  var lr=document.getElementById('lr-'+tokenId).value;
-  if(!lr){alert('Please enter LR number.');return;}
-  btn.textContent='Submitting...';btn.disabled=true;
-  var vSel=document.querySelector('#vs-'+tokenId+' .radio-opt.sel');
-  apiPost({action:'submitPickup',data:{
-    tokenId:tokenId,
-    lrNumber:lr,
-    invoiceNumber:document.getElementById('inv-'+tokenId).value,
-    ewbNumber:document.getElementById('ewb-'+tokenId).value,
-    numberOfBoxes:document.getElementById('boxes-'+tokenId).value,
-    pickupDate:document.getElementById('pd-'+tokenId).value,
-    vehicleNumber:document.getElementById('vn-'+tokenId).value,
-    vehicleSize:vSel?vSel.getAttribute('data-val'):''
-  }}, function(res){
-    btn.textContent='Submitted';btn.disabled=true;btn.className='btn btn-green';
-    var el=document.getElementById('del-'+tokenId);
-    if(res.deliveryDate){el.style.display='block';el.textContent='Appointment scheduled: '+res.deliveryDate+' at '+res.appointmentTime+'. Warehouse team notified.';}
-    if(res.error)alert('Error: '+res.error);
+function doPickup(tid,btn){
+  var lr=document.getElementById("lr-"+tid).value;if(!lr){alert("Enter LR number.");return;}
+  btn.textContent="Submitting...";btn.disabled=true;
+  var vs=document.querySelector("#vs-"+tid+" .ro.sel");
+  apiPost({action:"submitPickup",data:{tokenId:tid,lrNumber:lr,invoiceNumber:document.getElementById("inv-"+tid).value,ewbNumber:document.getElementById("ewb-"+tid).value,numberOfBoxes:document.getElementById("bx-"+tid).value,pickupDate:document.getElementById("pd-"+tid).value,vehicleNumber:document.getElementById("vn-"+tid).value,vehicleSize:vs?vs.getAttribute("data-val"):""}},function(res){
+    btn.textContent="Submitted";btn.disabled=true;btn.className="btn btn-green btn-sm";
+    if(res.deliveryDate){var el=document.getElementById("del-"+tid);el.style.display="block";el.textContent="Appointment: "+res.deliveryDate+" at "+res.appointmentTime;}
+    if(res.error)alert("Error: "+res.error);
   });
 }
 
-// ── STEP 4 ────────────────────────────────────────────────────
+// ── STEP 4 ───────────────────────────────────────────────────────
 function doLookupLR(){
-  var lr=document.getElementById('s4-lr').value.trim();
-  if(!lr){alert('Please enter an LR number.');return;}
-  var el=document.getElementById('s4-result');
-  el.style.display='none';
-  apiGet({action:'lookupLR',lr:lr}, function(res){
-    el.style.display='block';
-    if(!res.found||res.error){el.innerHTML='<div class="alert alert-error">LR number not found: '+lr+'</div>';return;}
+  var lr=document.getElementById("s4-lr").value.trim();if(!lr){alert("Enter LR number.");return;}
+  var el=document.getElementById("s4-result");el.innerHTML='<div class="loading" style="padding:12px"><div class="spinner"></div></div>';
+  apiGet({action:"lookupLR",lr:lr},function(res){
+    if(!res.found||res.error){el.innerHTML='<div class="al-err alert">LR number not found: '+lr+"</div>";return;}
     var t=res.token;
-    el.innerHTML='<div class="alert alert-success" style="margin-bottom:12px">' +
-      '<strong>Record found</strong> — '+t[0]+'<br>' +
-      'Manufacturer: '+t[3]+' | Partner: '+t[19]+' | Boxes: '+t[8]+' | Vehicle: '+t[4]+'<br>' +
-      'Appointment: '+t[12]+' '+t[13]+' | Dock scheduled: '+t[14]+'</div>' +
-      '<div style="display:flex;gap:10px;align-items:flex-end">' +
-      '<div style="flex:1;max-width:260px"><label>Confirm vehicle # at gate</label><input id="s4-vn" value="'+t[4]+'" placeholder="Vehicle number"></div>' +
-      '<div style="flex:1;max-width:220px"><label>Assign dock</label><select id="s4-dock">' +
-      [13,14,15,16,17,18,19].map(function(d){return '<option'+(d===15?' selected':'')+'>Dock '+d+'</option>';}).join('')+'</select></div>' +
-      '<button class="btn btn-green" onclick="doConfirmInward(\''+t[0]+'\')">Confirm inward entry</button></div>' +
-      '<div id="s4-done" style="display:none" class="alert alert-success"></div>';
+    el.innerHTML='<div class="al-ok alert" style="margin-bottom:10px"><b>Record found</b> — '+t[0]+"<br>"+
+      "Manufacturer: "+t[3]+" | Boxes: "+t[8]+" | Vehicle: "+t[4]+"<br>"+
+      "Appointment: "+t[12]+" "+t[13]+" | Dock: "+t[14]+"</div>"+
+      '<div style="display:flex;gap:8px;align-items:flex-end">'+
+      '<div><label>Confirm Vehicle #</label><input id="s4-vn" value="'+t[4]+'" style="width:180px"></div>'+
+      '<div><label>Assign Dock</label><select id="s4-dk" style="width:130px">'+[13,14,15,16,17,18,19].map(function(d){return'<option'+(d===15?" selected":"")+">Dock "+d+"</option>";}).join("")+"</select></div>"+
+      '<button class="btn btn-green btn-sm" onclick="doInward(\''+t[0]+'\')">Confirm Gate In</button></div>'+
+      '<div id="s4-done"></div>';
   });
 }
-function doConfirmInward(tokenId){
-  var dock=document.getElementById('s4-dock').value;
-  apiPost({action:'securityInward',data:{tokenId:tokenId,dockAssigned:dock,vehicleNumber:document.getElementById('s4-vn').value}}, function(res){
-    document.getElementById('s4-done').style.display='block';
-    document.getElementById('s4-done').textContent='Inward entry confirmed. '+dock+' assigned. Entry time: '+res.entryTime+'. Driver notified.';
+function doInward(tid){
+  var dock=document.getElementById("s4-dk").value;
+  apiPost({action:"securityInward",data:{tokenId:tid,dockAssigned:dock,vehicleNumber:document.getElementById("s4-vn").value}},function(res){
+    document.getElementById("s4-done").innerHTML='<div class="al-ok alert" style="margin-top:10px">Gate In confirmed. '+dock+" assigned. Entry: "+res.entryTime+".</div>";
   });
 }
 
-// ── STEP 5 ────────────────────────────────────────────────────
+// ── STEP 5 ───────────────────────────────────────────────────────
+function loadS5(){
+  apiGet({action:"getTokens",step:"4"},function(tokens){
+    var el=document.getElementById("s5-body");
+    if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-info alert">No vehicles currently at warehouse for unloading.</div>';return;}
+    el.innerHTML=tokens.map(function(t){
+      return'<div class="card"><div class="card-hdr">'+
+        '<div class="card-hdr-title">'+t.tokenId+" — "+t.manufacturerName+"</div>'+<span class='badge b-amber'>Arrived at Warehouse</span></div>"+
+        '<div class="card-body"><div class="form-grid">'+
+        '<div><b style="font-size:12px">'+t.manufacturerName+"</b><br><span style='font-size:11px;color:var(--muted)'>"+t.numberOfBoxes+" boxes expected | Dock: "+t.dockAssigned+"</span></div>"+
+        '<div style="text-align:right">'+
+        '<button class="btn btn-primary btn-sm" onclick="startUnload(\''+t.tokenId+'\')">Start Unloading</button></div></div></div></div>';
+    }).join("");
+  });
+}
+function startUnload(tid){alert("Unloading started for "+tid+". In production: opens full unloading checklist with SKU verification and dispute capture.");}
+
+// ── STEP 6 ───────────────────────────────────────────────────────
 function doCheckClearance(){
-  var v=document.getElementById('s5-vehicle').value.trim();
-  if(!v){alert('Please enter vehicle number.');return;}
-  var el=document.getElementById('s5-result');
-  el.style.display='block';
-  el.innerHTML='<div class="alert alert-success">' +
-    '<strong>Clearance granted</strong> — Vehicle '+v+'<br>' +
-    'Unloading completed | POD signed | TAT: 76 minutes<br><br>' +
-    '<button class="btn btn-green btn-sm" onclick="doConfirmExit(\''+v+'\')">Confirm vehicle exit</button></div>' +
-    '<div id="s5-done" style="display:none" class="alert alert-success"></div>';
+  var v=document.getElementById("s6-veh").value.trim();if(!v){alert("Enter vehicle number.");return;}
+  document.getElementById("s6-result").innerHTML=
+    '<div class="al-ok alert" style="margin-bottom:8px"><b>Clearance granted</b> — '+v+"<br>"+
+    "Unloading completed | POD signed | TAT: 76 min<br><br>"+
+    '<button class="btn btn-green btn-sm" onclick="doExit(\''+v+'\')">Confirm Gate Out</button></div>'+
+    '<div id="s6-done"></div>';
 }
-function doConfirmExit(vehicle){
-  apiPost({action:'securityOutward',data:{vehicleNumber:vehicle}}, function(res){
-    document.getElementById('s5-done').style.display='block';
-    document.getElementById('s5-done').textContent='Vehicle '+vehicle+' exited at '+(res.exitTime||'now')+'. Warehouse team notified for DMS upload.';
+function doExit(v){
+  apiPost({action:"securityOutward",data:{vehicleNumber:v}},function(res){
+    document.getElementById("s6-done").innerHTML='<div class="al-ok alert">Vehicle '+v+" exited at "+(res.exitTime||"—")+". Warehouse team notified for DMS upload.</div>";
   });
 }
 
-// ── STEP 6 ────────────────────────────────────────────────────
-function loadStep6(){
-  apiGet({action:'getTokens',step:'5'}, function(tokens){
-    var el=document.getElementById('s6-content');
-    if(!Array.isArray(tokens)||tokens.length===0){
-      el.innerHTML='<div class="alert alert-success">All DMS uploads complete. No pending items.</div>';return;
-    }
-    var html='<div class="card"><div class="card-title">Pending DMS uploads ('+tokens.length+')</div>';
-    tokens.forEach(function(t){
-      var fname=t.invoiceNumber+'_'+t.poNumber+'_'+new Date().toISOString().split('T')[0].replace(/-/g,'')+'.pdf';
-      html+='<div class="token-card" id="dms-'+t.tokenId+'">' +
-        '<div style="flex:1"><div class="token-id">'+t.tokenId+' | Invoice: '+t.invoiceNumber+'</div>' +
-        '<div class="token-title">'+t.manufacturerName+' — '+t.poNumber+'</div>' +
-        '<div class="token-meta">Vehicle exited | File name: <code>'+fname+'</code></div></div>' +
-        '<div class="token-actions"><button class="btn btn-primary btn-sm" onclick="doDMS(\''+t.tokenId+'\',this)">Mark uploaded</button></div></div>';
-    });
-    html+='</div>';
-    el.innerHTML=html;
+// ── STEP 7 ───────────────────────────────────────────────────────
+function loadS7(){
+  apiGet({action:"getTokens",step:"5"},function(tokens){
+    var el=document.getElementById("s7-body");
+    if(!Array.isArray(tokens)||!tokens.length){el.innerHTML='<div class="al-ok alert">All shipments closed. No DMS uploads pending.</div>';return;}
+    el.innerHTML=tokens.map(function(t){
+      var fname=(t.invoiceNumber||"INV")+"_"+(t.poNumber||"PO")+"_"+new Date().toISOString().split("T")[0].replace(/-/g,"")+".pdf";
+      return'<div class="tok" id="dms-'+t.tokenId+'">'+
+        '<div style="flex:1"><div class="tok-id">'+t.tokenId+" | Invoice: "+t.invoiceNumber+"</div>"+
+        '<div class="tok-title">'+t.manufacturerName+" — "+(t.poNumber||"")+"</div>"+
+        '<div class="tok-meta">File name: <code style="font-family:monospace;font-size:10px">'+fname+"</code></div></div>"+
+        '<div class="tok-actions"><button class="btn btn-primary btn-sm" onclick="doDMS(\''+t.tokenId+"\',this)\">Mark Uploaded &amp; Close</button></div></div>";
+    }).join("");
   });
 }
-function doDMS(tokenId,btn){
-  btn.textContent='Saving...';btn.disabled=true;
-  apiPost({action:'uploadDMS',data:{tokenId:tokenId,driveLink:'https://drive.google.com/...'}}, function(res){
+function doDMS(tid,btn){
+  btn.textContent="Closing...";btn.disabled=true;
+  apiPost({action:"uploadDMS",data:{tokenId:tid,driveLink:"https://drive.google.com/..."}},function(res){
     if(res.error){alert(res.error);return;}
-    btn.textContent='Completed';btn.className='btn btn-green btn-sm';
-    document.getElementById('dms-'+tokenId).style.opacity='0.5';
+    btn.textContent="Closed";btn.className="btn btn-green btn-sm";
+    document.getElementById("dms-"+tid).style.opacity=".5";
   });
 }
 
-// ── MASTER DATA ────────────────────────────────────────────────
+// ── MASTER ───────────────────────────────────────────────────────
 function loadMaster(){
-  var el=document.getElementById('master-content');
-  apiGet({action:'getVendors'}, function(vendors){
-    apiGet({action:'getPartners'}, function(partners){
-      var vRows=(vendors||[]).map(function(v){
-        return '<tr><td style="font-family:monospace;font-size:11px">'+v.code+'</td><td>'+v.name+'</td><td>'+v.pocName+'</td><td>'+v.pocMobile+'</td><td>'+v.city+'</td><td><span class="badge '+(v.defaultTransit==='Surface'?'b-teal':'b-amber')+'">'+v.defaultTransit+'</span></td><td>'+v.preferredLP+'</td><td><span class="badge b-teal">'+v.active+'</span></td></tr>';
-      }).join('');
-      var pRows=(partners||[]).map(function(p){
-        return '<tr><td style="font-family:monospace;font-size:11px">'+p.code+'</td><td>'+p.name+'</td><td>'+p.contactName+'</td><td>'+p.mobile+'</td><td>'+p.email+'</td><td><span class="badge b-teal">'+p.active+'</span></td></tr>';
-      }).join('');
-      el.innerHTML=
-        '<div class="card"><div class="card-title">Manufacturing vendors <button class="btn btn-sm" onclick="showAddVendor()">+ Add vendor</button></div>' +
-        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>POC name</th><th>POC mobile</th><th>City</th><th>Default transit</th><th>Preferred LP</th><th>Status</th></tr></thead><tbody>'+vRows+'</tbody></table></div></div>' +
-        '<div class="card"><div class="card-title">Logistics partners <button class="btn btn-sm" onclick="showAddPartner()">+ Add partner</button></div>' +
-        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Contact</th><th>Mobile</th><th>Email</th><th>Status</th></tr></thead><tbody>'+pRows+'</tbody></table></div></div>' +
-        '<div class="card"><div class="card-title">Drop locations</div>' +
-        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Dock range</th><th>Status</th></tr></thead><tbody>' +
-        '<tr><td style="font-family:monospace;font-size:11px">DL-001</td><td>Aramex Warehouse</td><td>Docks 13-19</td><td><span class="badge b-teal">Active</span></td></tr>' +
-        '<tr><td style="font-family:monospace;font-size:11px">DL-002</td><td>Servicelink Warehouse</td><td>Docks 13-19</td><td><span class="badge b-teal">Active</span></td></tr>' +
-        '</tbody></table></div></div>';
+  apiGet({action:"getVendors"},function(vs){
+    apiGet({action:"getPartners"},function(ps){
+      var vr=(vs||[]).map(function(v){
+        return"<tr><td class='mono' style='font-size:10px'>"+v.code+"</td><td>"+v.name+"</td><td>"+v.pocName+"</td><td>"+v.pocMobile+"</td><td>"+v.city+"</td>"+
+          "<td><span class='badge "+(v.defaultTransit==="Surface"?"b-teal":"b-amber")+"'>"+v.defaultTransit+"</span></td>"+
+          "<td>"+v.preferredLP+"</td><td><span class='badge b-green'>Active</span></td></tr>";
+      }).join("");
+      var pr=(ps||[]).map(function(p){
+        return"<tr><td class='mono' style='font-size:10px'>"+p.code+"</td><td>"+p.name+"</td><td>"+p.contactName+"</td><td>"+p.mobile+"</td><td>"+p.email+"</td><td><span class='badge b-green'>Active</span></td></tr>";
+      }).join("");
+      document.getElementById("master-body").innerHTML=
+        '<div class="card"><div class="card-hdr"><div class="card-hdr-title">Manufacturing Vendors</div></div>'+
+        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>POC</th><th>Mobile</th><th>City</th><th>Transit</th><th>Preferred LP</th><th>Status</th></tr></thead><tbody>'+vr+"</tbody></table></div></div>"+
+        '<div class="card"><div class="card-hdr"><div class="card-hdr-title">Logistics Partners</div></div>'+
+        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Contact</th><th>Mobile</th><th>Email</th><th>Status</th></tr></thead><tbody>'+pr+"</tbody></table></div></div>"+
+        '<div class="card"><div class="card-hdr"><div class="card-hdr-title">Drop Locations</div></div>'+
+        '<div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Dock Range</th><th>Status</th></tr></thead><tbody>'+
+        "<tr><td class='mono' style='font-size:10px'>DL-001</td><td>Aramex Warehouse</td><td>Docks 13–19</td><td><span class='badge b-green'>Active</span></td></tr>"+
+        "<tr><td class='mono' style='font-size:10px'>DL-002</td><td>Servicelink Warehouse</td><td>Docks 13–19</td><td><span class='badge b-green'>Active</span></td></tr>"+
+        "</tbody></table></div></div>";
     });
   });
 }
-function showAddVendor(){
-  var code=prompt('Vendor name?');
-  if(!code)return;
-  apiPost({action:'addVendor',data:{name:code,pocName:'',pocMobile:'',pocEmail:'',city:'',defaultTransit:'Surface',preferredLP:''}},function(r){if(r.success){loadMaster();}});
-}
-function showAddPartner(){
-  var name=prompt('Logistics partner name?');
-  if(!name)return;
-  apiPost({action:'addPartner',data:{name:name,contactName:'',mobile:'',email:''}},function(r){if(r.success){loadMaster();}});
-}
+function addVendorPrompt(){var n=prompt("Vendor name?");if(!n)return;apiPost({action:"addVendor",data:{name:n,pocName:"",pocMobile:"",pocEmail:"",city:"",defaultTransit:"Surface",preferredLP:""}},function(r){if(r.success)loadMaster();});}
+function addPartnerPrompt(){var n=prompt("Partner name?");if(!n)return;apiPost({action:"addPartner",data:{name:n,contactName:"",mobile:"",email:""}},function(r){if(r.success)loadMaster();});}
 
-// ── INIT ──────────────────────────────────────────────────────
-// API connected
-loadDashboard();
+// ── INIT ─────────────────────────────────────────────────────────
+document.getElementById("name-modal").style.display = "none";
+initUser();
 </script>
 </body>
 </html>
