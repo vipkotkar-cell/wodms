@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'">
+
 <meta name="viewport" content="width=1280,initial-scale=1">
 <title>Inbound Ops Central — Mosaic Wellness</title>
 <style>
@@ -481,67 +481,78 @@ function get(params, cb) {
   var url = API + "?" + Object.keys(params).map(function(k) {
     return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
   }).join("&");
-
-  var done = false;
-  var timer = setTimeout(function() {
-    if (done) return;
-    done = true;
-    useJSONP();
-  }, 5000);
-
-  // Try fetch first
-  fetch(url, { method: "GET", redirect: "follow" })
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      try {
-        var t = text.trim();
-        // Strip JSONP wrapper: cbXXX({...}) -> {...}
-        var bracket = t.indexOf("{");
-        var arrBracket = t.indexOf("[");
-        var start = bracket === -1 ? arrBracket : arrBracket === -1 ? bracket : Math.min(bracket, arrBracket);
-        if (start > 0) t = t.substring(start, t.lastIndexOf(start === bracket ? "}" : "]") + 1);
-        cb(JSON.parse(t));
-      } catch(e) {
-        cb({ error: "Parse error: " + text.substring(0, 80) });
-      }
-    })
-    .catch(function() {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      useJSONP();
-    });
-
-  function useJSONP() {
-    var id = "cb" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
-    var s = document.createElement("script");
-    var t2 = setTimeout(function() {
-      delete window[id];
-      if (s.parentNode) s.parentNode.removeChild(s);
-      cb({ error: "Timeout. Check Apps Script: Deploy > Manage > Who has access = Anyone" });
-    }, 8000);
-    window[id] = function(data) {
-      clearTimeout(t2);
-      delete window[id];
-      if (s.parentNode) s.parentNode.removeChild(s);
-      cb(data);
-    };
-    s.onerror = function() {
-      clearTimeout(t2);
-      delete window[id];
-      cb({ error: "Failed. Check Apps Script deployment access." });
-    };
-    s.src = url + "&callback=" + id;
-    document.body.appendChild(s);
-  }
+  jsonp(url, cb);
 }
 
 function post(action, data, cb) {
-  get({ action: action, data: JSON.stringify(data) }, cb);
+  var url = API + "?action=" + encodeURIComponent(action) +
+    "&data=" + encodeURIComponent(JSON.stringify(data));
+  jsonp(url, cb);
 }
+
+function jsonp(url, cb) {
+  var id = "cb" + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  var s  = document.createElement("script");
+  var done = false;
+
+  var t = setTimeout(function() {
+    if (done) return;
+    done = true;
+    cleanup();
+    // JSONP timed out — try fetch as fallback
+    fetchFallback(url, cb);
+  }, 6000);
+
+  window[id] = function(data) {
+    if (done) return;
+    done = true;
+    clearTimeout(t);
+    cleanup();
+    cb(data);
+  };
+
+  s.onerror = function() {
+    if (done) return;
+    done = true;
+    clearTimeout(t);
+    cleanup();
+    fetchFallback(url, cb);
+  };
+
+  function cleanup() {
+    delete window[id];
+    if (s.parentNode) s.parentNode.removeChild(s);
+  }
+
+  s.src = url + "&callback=" + id;
+  document.body.appendChild(s);
+}
+
+function fetchFallback(url, cb) {
+  fetch(url, { method: "GET", redirect: "follow" })
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      try {
+        // Strip JSONP wrapper if present e.g. cbXXX({...});
+        var t = txt.trim();
+        var s = t.indexOf("{");
+        var a = t.indexOf("[");
+        var start = (s === -1) ? a : (a === -1) ? s : Math.min(s, a);
+        if (start > 0) {
+          var end = (t.charAt(start) === "{") ? t.lastIndexOf("}") : t.lastIndexOf("]");
+          t = t.slice(start, end + 1);
+        }
+        cb(JSON.parse(t));
+      } catch(e) {
+        cb({ error: "Parse error. Raw: " + txt.slice(0, 100) });
+      }
+    })
+    .catch(function(e) {
+      cb({ error: "Connection failed: " + e.message +
+        ". Go to Apps Script > Deploy > Manage > set Who has access = Anyone" });
+    });
+}
+
 
 // ── ROLES ─────────────────────────────────────────────────────────────────
 var ROLES = {
@@ -658,6 +669,7 @@ function loadDash() {
     }
     el("sync-txt").textContent = d.updated || "Connected";
     el("sync-txt").style.color = "#4ade80";
+    el("sync-txt").title = "Backend connected";
     var c = d.counts || {};
     var cap = d.capacity || { used: 0, remaining: 3500, total: 3500 };
     var pct = Math.min(100, Math.round((cap.used || 0) / 35));
@@ -1469,24 +1481,8 @@ function calDayClick(day, m, y, titleId, listId) {
 // ── INIT ─────────────────────────────────────────────────────────────────
 setUser({ name: "Admin", email: "admin@mosaicwellness.in", role: "admin" });
 
-// Test connection first, then load dashboard
-el("sync-txt").textContent = "Connecting...";
-get({ action: "ping" }, function(r) {
-  if (r.error) {
-    el("sync-txt").textContent = "Offline";
-    el("sync-txt").style.color = "#f87171";
-    html("sc-dash",
-      '<div style="padding:30px;text-align:center">' +
-      '<div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:8px">Cannot connect to backend</div>' +
-      '<div style="font-size:12px;color:var(--muted);margin-bottom:16px">' + r.error + '</div>' +
-      '<a href="' + API + '?action=ping&callback=test" target="_blank" class="btn btnp btns">Test backend URL</a>' +
-      '</div>');
-    return;
-  }
-  el("sync-txt").textContent = r.time || "Connected";
-  el("sync-txt").style.color = "#4ade80";
-  loadDash();
-});
+// Load dashboard directly
+loadDash();
 </script>
 </body>
 </html>
