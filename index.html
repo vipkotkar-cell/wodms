@@ -980,14 +980,9 @@ el("create-btn").addEventListener("click", function() {
 
   // BLOCK if any SKU exceeds PO qty — show popup
   if (exceeded.length > 0) {
-    alert("Token cannot be created — PO qty exceeded:
-
-" +
-      exceeded.map(function(e) { return "• " + e; }).join("
-") +
-      "
-
-Please reduce Ship Qty or request a PO amendment first.");
+    alert("Token cannot be created — PO qty exceeded:\n\n" +
+      exceeded.map(function(e) { return "• " + e; }).join("\n") +
+      "\n\nPlease reduce Ship Qty or request a PO amendment first.");
     return;
   }
 
@@ -1003,19 +998,19 @@ Please reduce Ship Qty or request a PO amendment first.");
     btn.textContent = "Create Shipment Token"; btn.disabled = false;
     if (res.error) { alert("Error: " + res.error); return; }
     if (res.blocked) {
-      alert("Token blocked:
-
-" + (res.errors || []).join("
-"));
+      alert("Token blocked:\n\n" + (res.errors || []).join("\n"));
       return;
     }
     var ok = el("s1-ok");
-    ok.textContent = "✓ Token " + res.id + " created — Status: " + res.status;
+    ok.textContent = "Token " + res.id + " created — Status: " + res.status;
     ok.style.display = "block";
     if (res.driveUrl) {
       var d = el("s1-drive"); d.style.display = "block";
-      d.innerHTML = "<b>Drive folder ready.</b> <a href="" + res.driveUrl +
-        "" target="_blank" style="color:var(--blue)">Open folder → upload invoice</a>";
+      var a = document.createElement("a");
+      a.href = res.driveUrl; a.target = "_blank";
+      a.style.color = "var(--blue)"; a.textContent = "Open Drive folder — upload invoice here";
+      d.innerHTML = "<b>Drive folder ready.</b> ";
+      d.appendChild(a);
     }
     setTimeout(function() { ok.style.display = "none"; }, 8000);
   });
