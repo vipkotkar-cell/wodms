@@ -758,16 +758,37 @@ function loadS2(){
   get({action:"partners"},function(ps){if(Array.isArray(ps))partnerCache=ps;});
   get({action:"tokens",step:"2"},function(rows){
     var c=el("s2-list"); c.innerHTML="";
-    if(!Array.isArray(rows)||!rows.length){c.innerHTML='<div class="al ai">No tokens awaiting assignment.</div>';return;}
+    if(!Array.isArray(rows)||!rows.length){c.innerHTML='<div class="al ai">No tokens yet. Create a shipment in Step 1.</div>';return;}
+    // Sort: Pickup Pending first, then others
+    rows.sort(function(a,b){
+      var order={"Pickup Pending":0,"Rejected by Partner":1,"Rejected":2,"Partner Assigned":3,"Partner Accepted":4,"In-Transit":5,"Pending Approval":6};
+      return (order[a.status]||9)-(order[b.status]||9);
+    });
     rows.forEach(function(t){
       var div=document.createElement("div"); div.className="tok"; div.id="tk-"+t.id;
-      var pend=t.status==="Pending Approval";
       var hasPt=t.partner&&t.partner!==""&&t.partner!=="undefined";
       var actionHtml;
-      if(pend){actionHtml='<span class="badge ba">Awaiting Transit Approval</span>';}
-      else if(hasPt&&t.status!=="Pickup Pending"){actionHtml=sb(t.status)+' <span class="badge bt" style="margin-left:4px">'+t.partner+'</span>';}
-      else{actionHtml='<select style="width:180px;font-size:11px" class="lp-sel"><option value="">Select partner...</option>'+partnerCache.map(function(p){return'<option value="'+p.name+'">'+p.name+'</option>';}).join("")+'</select><button class="btn btnp btns assign-btn" data-tid="'+t.id+'">Assign</button>';}
-      div.innerHTML='<div style="flex:1"><div class="tid">'+t.id+'</div><div class="ttl2">'+t.vendor+' — '+t.boxes+' boxes</div><div class="tmt">'+t.productType+' | '+t.transit+' | '+t.drop+' | '+t.createdAt+'</div></div><div class="tac">'+actionHtml+'</div>';
+      if(t.status==="Pending Approval"){
+        actionHtml='<span class="badge ba" style="font-size:10px">Awaiting Transit Approval</span>';
+      } else if(t.status==="Rejected"){
+        actionHtml='<span class="badge br">Rejected</span>';
+      } else if(hasPt&&(t.status==="Partner Assigned"||t.status==="Partner Accepted"||t.status==="In-Transit")){
+        // Already assigned — show partner + option to reassign
+        actionHtml=sb(t.status)+' <span class="badge bt" style="margin-left:4px">'+t.partner+'</span>'+
+          '<select style="width:140px;font-size:11px;margin-left:6px" class="lp-sel"><option value="">Reassign...</option>'+
+          partnerCache.map(function(p){return'<option value="'+p.name+'">'+p.name+'</option>';}).join("")+
+          '</select><button class="btn btns assign-btn" data-tid="'+t.id+'">→</button>';
+      } else {
+        // Needs assignment (Pickup Pending or Rejected by Partner)
+        actionHtml=sb(t.status)+
+          '<select style="width:160px;font-size:11px;margin-left:6px" class="lp-sel"><option value="">Select partner...</option>'+
+          partnerCache.map(function(p){return'<option value="'+p.name+'">'+p.name+'</option>';}).join("")+
+          '</select><button class="btn btnp btns assign-btn" data-tid="'+t.id+'">Assign</button>';
+      }
+      div.innerHTML='<div style="flex:1"><div class="tid">'+t.id+'</div>'+ 
+        '<div class="ttl2">'+t.vendor+' — '+t.boxes+' boxes | '+t.productType+' | '+t.transit+'</div>'+ 
+        '<div class="tmt">Drop: '+t.drop+' | Created: '+t.createdAt+(hasPt?' | Partner: <b>'+t.partner+'</b>':'')+'</div></div>'+ 
+        '<div class="tac" style="flex-shrink:0">'+actionHtml+'</div>';
       c.appendChild(div);
     });
     c.addEventListener("click",function(e){
