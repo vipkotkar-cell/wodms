@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'">
 <meta name="viewport" content="width=1280,initial-scale=1">
 <title>Inbound Ops Central — Mosaic Wellness</title>
 <style>
@@ -480,35 +481,62 @@ function get(params, cb) {
   var url = API + "?" + Object.keys(params).map(function(k) {
     return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
   }).join("&");
-  var id = "cb" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
-  var el = document.createElement("script");
+
   var done = false;
   var timer = setTimeout(function() {
     if (done) return;
     done = true;
-    cleanup();
-    cb({ error: "Timeout — check Apps Script deployment settings" });
-  }, 15000);
-  window[id] = function(data) {
-    if (done) return;
-    done = true;
-    clearTimeout(timer);
-    cleanup();
-    cb(data);
-  };
-  el.onerror = function() {
-    if (done) return;
-    done = true;
-    clearTimeout(timer);
-    cleanup();
-    cb({ error: "Network error — check deployment URL" });
-  };
-  function cleanup() {
-    delete window[id];
-    if (el.parentNode) el.parentNode.removeChild(el);
+    useJSONP();
+  }, 5000);
+
+  // Try fetch first
+  fetch(url, { method: "GET", redirect: "follow" })
+    .then(function(r) { return r.text(); })
+    .then(function(text) {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      try {
+        var t = text.trim();
+        // Strip JSONP wrapper: cbXXX({...}) -> {...}
+        var bracket = t.indexOf("{");
+        var arrBracket = t.indexOf("[");
+        var start = bracket === -1 ? arrBracket : arrBracket === -1 ? bracket : Math.min(bracket, arrBracket);
+        if (start > 0) t = t.substring(start, t.lastIndexOf(start === bracket ? "}" : "]") + 1);
+        cb(JSON.parse(t));
+      } catch(e) {
+        cb({ error: "Parse error: " + text.substring(0, 80) });
+      }
+    })
+    .catch(function() {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      useJSONP();
+    });
+
+  function useJSONP() {
+    var id = "cb" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    var s = document.createElement("script");
+    var t2 = setTimeout(function() {
+      delete window[id];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      cb({ error: "Timeout. Check Apps Script: Deploy > Manage > Who has access = Anyone" });
+    }, 8000);
+    window[id] = function(data) {
+      clearTimeout(t2);
+      delete window[id];
+      if (s.parentNode) s.parentNode.removeChild(s);
+      cb(data);
+    };
+    s.onerror = function() {
+      clearTimeout(t2);
+      delete window[id];
+      cb({ error: "Failed. Check Apps Script deployment access." });
+    };
+    s.src = url + "&callback=" + id;
+    document.body.appendChild(s);
   }
-  el.src = url + "&callback=" + id;
-  document.body.appendChild(el);
 }
 
 function post(action, data, cb) {
@@ -629,6 +657,7 @@ function loadDash() {
       return;
     }
     el("sync-txt").textContent = d.updated || "Connected";
+    el("sync-txt").style.color = "#4ade80";
     var c = d.counts || {};
     var cap = d.capacity || { used: 0, remaining: 3500, total: 3500 };
     var pct = Math.min(100, Math.round((cap.used || 0) / 35));
@@ -918,7 +947,9 @@ el("s1-skus").addEventListener("input", function(e) {
   if (d > 0)      { td.textContent = "+" + d + " EXCEEDS"; td.style.color = "var(--red)"; }
   else if (d < 0) { td.textContent = d + " (partial)";    td.style.color = "var(--teal)"; }
   else            { td.textContent = "Exact";              td.style.color = "var(--green)"; }
-});el("create-btn").addEventListener("click", function() {
+});
+
+el("create-btn").addEventListener("click", function() {
   var vnd = el("s1-vend");
   if (!vnd.value) { alert("Select a vendor."); return; }
   var boxes = parseInt(el("s1-boxes").value) || 0;
@@ -988,7 +1019,9 @@ Please reduce Ship Qty or request a PO amendment first.");
     }
     setTimeout(function() { ok.style.display = "none"; }, 8000);
   });
-});el("clear-btn").addEventListener("click", function() {
+});
+
+el("clear-btn").addEventListener("click", function() {
   el("s1-vend").selectedIndex = 0;
   ["s1-poc","s1-mob","s1-boxes","s1-wt","s1-vsz","s1-inv"].forEach(function(id) { el(id).value = ""; });
   el("s1-skus").innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--faint);padding:12px">Select a PO to load SKUs</td></tr>';
@@ -1440,7 +1473,25 @@ function calDayClick(day, m, y, titleId, listId) {
 
 // ── INIT ─────────────────────────────────────────────────────────────────
 setUser({ name: "Admin", email: "admin@mosaicwellness.in", role: "admin" });
-loadDash();
+
+// Test connection first, then load dashboard
+el("sync-txt").textContent = "Connecting...";
+get({ action: "ping" }, function(r) {
+  if (r.error) {
+    el("sync-txt").textContent = "Offline";
+    el("sync-txt").style.color = "#f87171";
+    html("sc-dash",
+      '<div style="padding:30px;text-align:center">' +
+      '<div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:8px">Cannot connect to backend</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:16px">' + r.error + '</div>' +
+      '<a href="' + API + '?action=ping&callback=test" target="_blank" class="btn btnp btns">Test backend URL</a>' +
+      '</div>');
+    return;
+  }
+  el("sync-txt").textContent = r.time || "Connected";
+  el("sync-txt").style.color = "#4ade80";
+  loadDash();
+});
 </script>
 </body>
 </html>
