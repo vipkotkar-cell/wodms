@@ -614,8 +614,8 @@ function loadReg() {
   var p={action:"tokens"}; if(step) p.step=step;
   get(p,function(rows){
     if(!Array.isArray(rows)||!rows.length){html("reg-body",'<div style="padding:20px;text-align:center;color:var(--faint)">No records</div>');return;}
-    html("reg-body",'<table><thead><tr><th>Token</th><th>PO#</th><th>Invoice#</th><th>Vendor</th><th>Vehicle#</th><th>LR#</th><th>Pickup</th><th>Boxes</th><th>Drop</th><th>Status</th></tr></thead><tbody>'+
-      rows.map(function(r){return'<tr><td class="mono" style="font-size:10px">'+r.id+'</td><td>'+r.po+'</td><td>'+r.invoice+'</td><td>'+r.vendor+'</td><td class="mono" style="font-size:10px">'+r.vehicle+'</td><td class="mono" style="font-size:10px">'+r.lr+'</td><td>'+r.pickupDate+'</td><td>'+r.boxes+'</td><td>'+r.drop+'</td><td>'+sb(r.status)+'</td></tr>';}).join("")+'</tbody></table>');
+    html("reg-body",'<table><thead><tr><th>Token</th><th>PO#</th><th>Invoice#</th><th>Vendor</th><th>Transit</th><th>Vehicle#</th><th>LR#</th><th>Pickup</th><th>Boxes</th><th>Drop</th><th>Partner</th><th>Status</th></tr></thead><tbody>'+
+      rows.map(function(r){var trBadge=r.transit==="Air"?'<span class="badge ba">Air</span>':r.transit==="Train"?'<span class="badge bp">Train</span>':'<span class="badge bt">Surface</span>';return'<tr><td class="mono" style="font-size:10px">'+r.id+'</td><td class="mono" style="font-size:10px">'+r.po+'</td><td class="mono" style="font-size:10px">'+r.invoice+'</td><td style="font-weight:500">'+r.vendor+'</td><td>'+trBadge+'</td><td class="mono" style="font-size:10px">'+r.vehicle+'</td><td class="mono" style="font-size:10px">'+r.lr+'</td><td style="font-size:11px">'+r.pickupDate+'</td><td style="font-weight:600">'+r.boxes+'</td><td>'+r.drop+'</td><td style="font-size:11px">'+r.partner+'</td><td>'+sb(r.status)+'</td></tr>';}).join("")+'</tbody></table>');
   });
 }
 el("reg-step").addEventListener("change",loadReg);
